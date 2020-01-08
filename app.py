@@ -291,7 +291,7 @@ class BestNewMusicDigest:
         msg = MIMEMultipart()
         msg["From"] = "Ume the Unicorn"
         msg["To"] = os.environ["RECIPIENT_EMAIL"]
-        msg["Subject"] = "🎧 Best New Music {} 🎧".format(datetime.now().strftime("%d/%m/%Y"))
+        msg["Subject"] = "🎧 Best New Music - {} 🎧".format(datetime.now().strftime("%d/%m/%Y"))
         msg.attach(MIMEText(content, "html"))
         smtp.send_message(msg)
         smtp.quit()
