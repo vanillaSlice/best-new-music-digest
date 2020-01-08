@@ -254,9 +254,9 @@ class BestNewMusicDigest:
         return any(d["items"] or d["errors"] for d in digest)
 
     def _to_html(self, digest):
-        dad_joke = self._get_dad_joke()
-        digest_html = "<p>Sappenin' bro? <em>{}</em> " \
-                      "Anyway, here's some choons to stick in your ear holes:</p><br />".format(dad_joke)
+        digest_html = "<p>Sappenin' bro?</p>"
+        digest_html += "<p><em>{}</em> 🤦‍♂️</p>".format(self._get_dad_joke())
+        digest_html += "<p>Anyway, here's some choons to stick in your ear holes:</p><br />"
 
         for d in digest:
             digest_html += "<h3><a href=\"{}\">{}</a></h3>".format(d["link"], d["title"])
