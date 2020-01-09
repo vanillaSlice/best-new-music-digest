@@ -12,248 +12,192 @@ from bs4 import BeautifulSoup
 from pymongo import MongoClient
 import requests
 
-class SputnikmusicScraper:
+class Scraper:
 
-    _name = "Sputnikmusic Albums"
-    _url = "https://www.sputnikmusic.com"
+    _saved_checkpoint = False
 
-    def __init__(self, checkpointer):
+    def __init__(self, checkpointer, title, link):
         self._checkpointer = checkpointer
+        self._title = title
+        self._link = link
 
     def scrape(self):
         errors = False
 
         try:
-            albums = self._get_albums()
+            items = self._get_items()
         except Exception as e:
             logging.error(e)
-            albums = []
+            items = []
             errors = True
 
         return {
-            "title": self._name,
-            "link": self._url + "/bestnewmusic",
-            "items": albums,
+            "title": self._title,
+            "link": self._link,
+            "items": items,
             "errors": errors,
         }
 
-    def _get_albums(self):
-        albums = []
+    def _get_items(self):
+        return []
 
-        response = requests.get(self._url + "/bestnewmusic")
+    def _get_checkpoint(self):
+        return self._checkpointer.get_checkpoint(self._title)
+
+    def _save_checkpoint(self, item):
+        if not self._saved_checkpoint:
+            self._checkpointer.save_checkpoint(self._title, item)
+            self._saved_checkpoint = True
+
+class SputnikmusicScraper(Scraper):
+
+    _base_url = "https://www.sputnikmusic.com"
+    _scrape_url = "{}/bestnewmusic".format(_base_url)
+
+    def __init__(self, checkpointer):
+        super().__init__(checkpointer, "Sputnikmusic Albums", self._scrape_url)
+
+    def _get_items(self):
+        items = []
+
+        response = requests.get(self._scrape_url)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        checkpoint = self._checkpointer.get_checkpoint(self._name)
-        updated_checkpoint = False
+        checkpoint = self._get_checkpoint()
 
-        for item in soup.find_all("td", "bestnewmusic"):
-            a = item.find("a")
+        for td in soup.find_all("td", "bestnewmusic"):
+            a = td.find("a")
 
-            entry = {
+            item = {
                 "artist": a.find("strong").contents[0],
                 "title": a.find_all("font")[1].contents[1],
-                "link": self._url + a.get("href"),
+                "link": "{}{}".format(self._base_url, a.get("href")),
             }
 
-            if entry == checkpoint:
+            if item == checkpoint:
                 break
 
-            if not updated_checkpoint:
-                self._checkpointer.save_checkpoint(self._name, entry)
-                updated_checkpoint = True
+            self._save_checkpoint(item)
 
-            albums.append(entry)
+            items.append(item)
 
-        return albums
+        return items
 
-class PitchforkAlbumScraper:
+class PitchforkAlbumScraper(Scraper):
 
-    _name = "Pitchfork Albums"
-    _url = "https://www.pitchfork.com"
+    _base_url = "https://www.pitchfork.com"
+    _scrape_url = "{}/reviews/best/albums/".format(_base_url)
 
     def __init__(self, checkpointer):
-        self._checkpointer = checkpointer
+        super().__init__(checkpointer, "Pitchfork Albums", self._scrape_url)
 
-    def scrape(self):
-        errors = False
+    def _get_items(self):
+        items = []
 
-        try:
-            albums = self._get_albums()
-        except Exception as e:
-            logging.error(e)
-            albums = []
-            errors = True
-
-        return {
-            "title": self._name,
-            "link": self._url + "/reviews/best/albums/",
-            "items": albums,
-            "errors": errors,
-        }
-
-    def _get_albums(self):
-        albums = []
-
-        response = requests.get(self._url + "/reviews/best/albums/")
+        response = requests.get(self._scrape_url)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        checkpoint = self._checkpointer.get_checkpoint(self._name)
-        updated_checkpoint = False
+        checkpoint = self._get_checkpoint()
 
-        for item in soup.find_all("div", "review"):
-            entry = {
-                "artist": " / ".join([i.contents[0] for i in item.find("ul", "artist-list").find_all("li")]),
-                "title": item.find("h2", "review__title-album").contents[0],
-                "link": self._url + item.find("a", "review__link").get("href"),
+        for div in soup.find_all("div", "review"):
+            item = {
+                "artist": " / ".join([li.contents[0] for li in div.find("ul").find_all("li")]),
+                "title": div.find("h2").contents[0],
+                "link": "{}{}".format(self._base_url, div.find("a").get("href")),
             }
 
-            if entry == checkpoint:
+            if item == checkpoint:
                 break
 
-            if not updated_checkpoint:
-                self._checkpointer.save_checkpoint(self._name, entry)
-                updated_checkpoint = True
+            self._save_checkpoint(item)
 
-            albums.append(entry)
+            items.append(item)
 
-        return albums
+        return items
 
-class PitchforkTrackScraper:
+class PitchforkTrackScraper(Scraper):
 
-    _name = "Pitchfork Tracks"
-    _url = "https://www.pitchfork.com"
+    _base_url = "https://www.pitchfork.com"
+    _scrape_url = "{}/reviews/best/tracks/".format(_base_url)
 
     def __init__(self, checkpointer):
-        self._checkpointer = checkpointer
+        super().__init__(checkpointer, "Pitchfork Tracks", self._scrape_url)
 
-    def scrape(self):
-        errors = False
+    def _get_items(self):
+        items = []
 
-        try:
-            tracks = self._get_tracks()
-        except Exception as e:
-            logging.error(e)
-            tracks = []
-            errors = True
-
-        return {
-            "title": self._name,
-            "link": self._url + "/reviews/best/tracks/",
-            "items": tracks,
-            "errors": errors,
-        }
-
-    def _get_tracks(self):
-        tracks = []
-
-        response = requests.get(self._url + "/reviews/best/tracks/")
+        response = requests.get(self._scrape_url)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        checkpoint = self._checkpointer.get_checkpoint(self._name)
-        updated_checkpoint = False
+        checkpoint = self._get_checkpoint()
 
-        item = soup.find("div", "track-details")
+        details = soup.find("div", "track-details")
 
-        entry = {
-            "artist": " / ".join([i.contents[0] for i in item.find("ul", "artist-list").find_all("li")]),
-            "title": item.find("h2", "title").contents[0][1:-1],
-            "link": self._url + item.find("a", "title-link").get("href"),
+        item = {
+            "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
+            "title": details.find("h2").contents[0][1:-1],
+            "link": "{}{}".format(self._base_url, details.find("a").get("href")),
         }
 
-        if entry == checkpoint:
+        if item == checkpoint:
             return []
 
-        self._checkpointer.save_checkpoint(self._name, entry)
+        self._save_checkpoint(item)
 
-        tracks.append(entry)
+        items.append(item)
 
-        for item in soup.find_all("a", "track-collection-item__track-link"):
-            entry = {
-                "artist": " / ".join([i.contents[0] for i in item.find("ul", "artist-list").find_all("li")]),
-                "title": item.find("h2", "track-collection-item__title").contents[0][1:-1],
-                "link": self._url + item.get("href"),
-            }
+        for details in soup.find_all("a", "track-collection-item__track-link"):
+            items.append({
+                "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
+                "title": details.find("h2").contents[0][1:-1],
+                "link": "{}{}".format(self._base_url, details.get("href")),
+            })
 
-            if entry == checkpoint:
-                break
+        return items
 
-            tracks.append(entry)
+class TheNeedleDropAlbumScraper(Scraper):
 
-        return tracks
-
-class TheNeedleDropAlbumScraper:
-
-    _name = "The Needle Drop Albums"
-    _url = "https://www.youtube.com/user/theneedledrop"
+    _base_url = "https://www.youtube.com"
 
     def __init__(self, checkpointer):
-        self._checkpointer = checkpointer
+        super().__init__(checkpointer, "The Needle Drop Albums", "{}/user/theneedledrop".format(self._base_url))
 
-    def scrape(self):
-        errors = False
-
-        try:
-            albums = self._get_albums()
-        except Exception as e:
-            logging.error(e)
-            albums = []
-            errors = True
-
-        return {
-            "title": self._name,
-            "link": self._url,
-            "items": albums,
-            "errors": errors,
-        }
-
-    def _get_albums(self):
-        albums = []
+    def _get_items(self):
+        items = []
 
         response = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&" \
                                 "playlistId=PLP4CSgl7K7oo93I49tQa0TLB8qY3u7xuO&" \
                                 "key={}".format(os.environ["YOUTUBE_API_KEY"]))
 
-        checkpoint = self._checkpointer.get_checkpoint(self._name)
-        updated_checkpoint = False
+        checkpoint = self._get_checkpoint()
 
-        for item in response.json()["items"]:
-            snippet = item["snippet"]
+        for response_item in response.json()["items"]:
+            snippet = response_item["snippet"]
             video_title = snippet["title"].split(" - ")
 
-            entry = {
-                "artist": video_title[0].strip(),
-                "title": video_title[1].replace("ALBUM REVIEW", "").strip(),
-                "link": "https://www.youtube.com/watch?v={}".format(snippet["resourceId"]["videoId"]),
+            item = {
+                "artist": video_title[0],
+                "title": video_title[1].replace("ALBUM REVIEW", ""),
+                "link": "{}/watch?v={}".format(self._base_url, snippet["resourceId"]["videoId"]),
             }
 
-            if entry == checkpoint:
+            if item == checkpoint:
                 break
 
-            if not updated_checkpoint:
-                self._checkpointer.save_checkpoint(self._name, entry)
-                updated_checkpoint = True
+            self._save_checkpoint(item)
 
-            albums.append(entry)
+            items.append(item)
 
-        return albums
+        return items
 
-class TheNeedleDropTrackScraper:
-
-    _url = "https://www.youtube.com/user/theneedledrop"
+class TheNeedleDropTrackScraper(Scraper):
 
     def __init__(self, checkpointer):
-        self._checkpointer = checkpointer
+        super().__init__(checkpointer, "The Needle Drop Tracks", "https://www.youtube.com/user/theneedledrop")
 
     # TODO implement this
-    def scrape(self):
-        tracks = []
-
-        return {
-            "title": "theneedledrop Tracks",
-            "link": self._url,
-            "items": tracks,
-            "errors": False,
-        }
+    def _get_items(self):
+        return []
 
 class Checkpointer:
 
