@@ -183,21 +183,59 @@ class PitchforkTrackScraper:
 
 class TheNeedleDropAlbumScraper:
 
+    _name = "The Needle Drop Albums"
     _url = "https://www.youtube.com/user/theneedledrop"
 
     def __init__(self, checkpointer):
         self._checkpointer = checkpointer
 
-    # TODO implement this
     def scrape(self):
-        albums = []
+        errors = False
+
+        try:
+            albums = self._get_albums()
+        except Exception as e:
+            logging.error(e)
+            albums = []
+            errors = True
 
         return {
-            "title": "theneedledrop Albums",
+            "title": self._name,
             "link": self._url,
             "items": albums,
-            "errors": False,
+            "errors": errors,
         }
+
+    def _get_albums(self):
+        albums = []
+
+        response = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&" \
+                                "playlistId=PLP4CSgl7K7oo93I49tQa0TLB8qY3u7xuO&" \
+                                "key={}".format(os.environ["YOUTUBE_API_KEY"]))
+
+        checkpoint = self._checkpointer.get_checkpoint(self._name)
+        updated_checkpoint = False
+
+        for item in response.json()["items"]:
+            snippet = item["snippet"]
+            video_title = snippet["title"].split(" - ")
+
+            entry = {
+                "artist": video_title[0].strip(),
+                "title": video_title[1].replace("ALBUM REVIEW", "").strip(),
+                "link": "https://www.youtube.com/watch?v={}".format(snippet["resourceId"]["videoId"]),
+            }
+
+            if entry == checkpoint:
+                break
+
+            if not updated_checkpoint:
+                self._checkpointer.save_checkpoint(self._name, entry)
+                updated_checkpoint = True
+
+            albums.append(entry)
+
+        return albums
 
 class TheNeedleDropTrackScraper:
 
