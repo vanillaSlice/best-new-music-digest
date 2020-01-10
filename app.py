@@ -271,7 +271,7 @@ class BestNewMusicDigest:
         smtp.starttls()
         smtp.login(os.environ["SENDER_EMAIL"], os.environ["SENDER_PASSWORD"])
         msg = MIMEMultipart()
-        msg["From"] = "Ume the Unicorn"
+        msg["From"] = os.environ["SENDER_NAME"]
         msg["To"] = os.environ["RECIPIENT_EMAIL"]
         msg["Subject"] = "🎧 Best New Music - {} 🎧".format(datetime.now().strftime("%d/%m/%Y"))
         msg.attach(MIMEText(content, "html"))
