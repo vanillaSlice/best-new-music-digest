@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
 import os
+import re
 import smtplib
 import sys
 
@@ -192,12 +193,51 @@ class TheNeedleDropAlbumScraper(Scraper):
 
 class TheNeedleDropTrackScraper(Scraper):
 
-    def __init__(self, checkpointer):
-        super().__init__(checkpointer, "The Needle Drop Tracks", "https://www.youtube.com/user/theneedledrop")
+    _BASE_URL = "https://www.youtube.com"
 
-    # TODO implement this
+    def __init__(self, checkpointer):
+        super().__init__(checkpointer, "The Needle Drop Tracks", "{}/user/theneedledrop".format(self._BASE_URL))
+        self._pattern = re.compile(r"!!!BEST TRACKS THIS WEEK!!!(.*?)\.\.\.meh\.\.\.", re.DOTALL)
+
     def _get_items(self):
-        return []
+        items = []
+
+        response = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&" \
+                                "playlistId=PLP4CSgl7K7or84AAhr7zlLNpghEnKWu2c&" \
+                                "key={}".format(os.environ["YOUTUBE_API_KEY"]))
+
+        checkpoint = self._get_checkpoint()
+
+        for response_item in response.json()["items"]:
+            snippet = response_item["snippet"]
+
+            if not snippet["title"].startswith("Weekly Track Roundup"):
+                continue
+
+            link = "{}/watch?v={}".format(self._BASE_URL, snippet["resourceId"]["videoId"])
+
+            new_checkpoint = { "link": link }
+
+            if new_checkpoint == checkpoint:
+                break
+
+            self._save_checkpoint(new_checkpoint)
+
+            for line in self._pattern.findall(snippet["description"])[0].split("\n"):
+                if " - " not in line:
+                    continue
+
+                video_title = line.split(" - ")
+
+                item = {
+                    "artist": video_title[0],
+                    "title": video_title[1],
+                    "link": link,
+                }
+
+                items.append(item)
+
+        return items
 
 class Checkpointer:
 
