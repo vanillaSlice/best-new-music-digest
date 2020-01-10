@@ -9,17 +9,17 @@ import smtplib
 import sys
 
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 from pymongo import MongoClient
 import requests
 
 class Scraper:
 
-    _saved_checkpoint = False
-
     def __init__(self, checkpointer, title, link):
         self._checkpointer = checkpointer
         self._title = title
         self._link = link
+        self._saved_checkpoint = False
 
     def scrape(self):
         errors = False
@@ -51,16 +51,16 @@ class Scraper:
 
 class SputnikmusicScraper(Scraper):
 
-    _base_url = "https://www.sputnikmusic.com"
-    _scrape_url = "{}/bestnewmusic".format(_base_url)
+    _BASE_URL = "https://www.sputnikmusic.com"
+    _SCRAPE_URL = "{}/bestnewmusic".format(_BASE_URL)
 
     def __init__(self, checkpointer):
-        super().__init__(checkpointer, "Sputnikmusic Albums", self._scrape_url)
+        super().__init__(checkpointer, "Sputnikmusic Albums", self._SCRAPE_URL)
 
     def _get_items(self):
         items = []
 
-        response = requests.get(self._scrape_url)
+        response = requests.get(self._SCRAPE_URL)
         soup = BeautifulSoup(response.text, "html.parser")
 
         checkpoint = self._get_checkpoint()
@@ -71,7 +71,7 @@ class SputnikmusicScraper(Scraper):
             item = {
                 "artist": a.find("strong").contents[0],
                 "title": a.find_all("font")[1].contents[1],
-                "link": "{}{}".format(self._base_url, a.get("href")),
+                "link": "{}{}".format(self._BASE_URL, a.get("href")),
             }
 
             if item == checkpoint:
@@ -85,16 +85,16 @@ class SputnikmusicScraper(Scraper):
 
 class PitchforkAlbumScraper(Scraper):
 
-    _base_url = "https://www.pitchfork.com"
-    _scrape_url = "{}/reviews/best/albums/".format(_base_url)
+    _BASE_URL = "https://www.pitchfork.com"
+    _SCRAPE_URL = "{}/reviews/best/albums/".format(_BASE_URL)
 
     def __init__(self, checkpointer):
-        super().__init__(checkpointer, "Pitchfork Albums", self._scrape_url)
+        super().__init__(checkpointer, "Pitchfork Albums", self._SCRAPE_URL)
 
     def _get_items(self):
         items = []
 
-        response = requests.get(self._scrape_url)
+        response = requests.get(self._SCRAPE_URL)
         soup = BeautifulSoup(response.text, "html.parser")
 
         checkpoint = self._get_checkpoint()
@@ -103,7 +103,7 @@ class PitchforkAlbumScraper(Scraper):
             item = {
                 "artist": " / ".join([li.contents[0] for li in div.find("ul").find_all("li")]),
                 "title": div.find("h2").contents[0],
-                "link": "{}{}".format(self._base_url, div.find("a").get("href")),
+                "link": "{}{}".format(self._BASE_URL, div.find("a").get("href")),
             }
 
             if item == checkpoint:
@@ -117,16 +117,16 @@ class PitchforkAlbumScraper(Scraper):
 
 class PitchforkTrackScraper(Scraper):
 
-    _base_url = "https://www.pitchfork.com"
-    _scrape_url = "{}/reviews/best/tracks/".format(_base_url)
+    _BASE_URL = "https://www.pitchfork.com"
+    _SCRAPE_URL = "{}/reviews/best/tracks/".format(_BASE_URL)
 
     def __init__(self, checkpointer):
-        super().__init__(checkpointer, "Pitchfork Tracks", self._scrape_url)
+        super().__init__(checkpointer, "Pitchfork Tracks", self._SCRAPE_URL)
 
     def _get_items(self):
         items = []
 
-        response = requests.get(self._scrape_url)
+        response = requests.get(self._SCRAPE_URL)
         soup = BeautifulSoup(response.text, "html.parser")
 
         checkpoint = self._get_checkpoint()
@@ -136,7 +136,7 @@ class PitchforkTrackScraper(Scraper):
         item = {
             "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
             "title": details.find("h2").contents[0][1:-1],
-            "link": "{}{}".format(self._base_url, details.find("a").get("href")),
+            "link": "{}{}".format(self._BASE_URL, details.find("a").get("href")),
         }
 
         if item == checkpoint:
@@ -150,17 +150,17 @@ class PitchforkTrackScraper(Scraper):
             items.append({
                 "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
                 "title": details.find("h2").contents[0][1:-1],
-                "link": "{}{}".format(self._base_url, details.get("href")),
+                "link": "{}{}".format(self._BASE_URL, details.get("href")),
             })
 
         return items
 
 class TheNeedleDropAlbumScraper(Scraper):
 
-    _base_url = "https://www.youtube.com"
+    _BASE_URL = "https://www.youtube.com"
 
     def __init__(self, checkpointer):
-        super().__init__(checkpointer, "The Needle Drop Albums", "{}/user/theneedledrop".format(self._base_url))
+        super().__init__(checkpointer, "The Needle Drop Albums", "{}/user/theneedledrop".format(self._BASE_URL))
 
     def _get_items(self):
         items = []
@@ -178,7 +178,7 @@ class TheNeedleDropAlbumScraper(Scraper):
             item = {
                 "artist": video_title[0],
                 "title": video_title[1].replace("ALBUM REVIEW", ""),
-                "link": "{}/watch?v={}".format(self._base_url, snippet["resourceId"]["videoId"]),
+                "link": "{}/watch?v={}".format(self._BASE_URL, snippet["resourceId"]["videoId"]),
             }
 
             if item == checkpoint:
@@ -201,9 +201,8 @@ class TheNeedleDropTrackScraper(Scraper):
 
 class Checkpointer:
 
-    client = MongoClient(os.environ["MONGODB_URI"])
-    db = client["best-new-music-digest"]
-    checkpoints = db.checkpoints
+    def __init__(self):
+        self.checkpoints = MongoClient(os.environ["MONGODB_URI"])["best-new-music-digest"].checkpoints
 
     def get_checkpoint(self, name):
         checkpoint = self.checkpoints.find_one({ "name": name })
@@ -214,15 +213,16 @@ class Checkpointer:
 
 class BestNewMusicDigest:
 
-    _checkpointer = Checkpointer()
+    def __init__(self):
+        self._checkpointer = Checkpointer()
 
-    _scrapers = [
-        SputnikmusicScraper(_checkpointer),
-        PitchforkAlbumScraper(_checkpointer),
-        PitchforkTrackScraper(_checkpointer),
-        TheNeedleDropAlbumScraper(_checkpointer),
-        TheNeedleDropTrackScraper(_checkpointer),
-    ]
+        self._scrapers = [
+            SputnikmusicScraper(self._checkpointer),
+            PitchforkAlbumScraper(self._checkpointer),
+            PitchforkTrackScraper(self._checkpointer),
+            TheNeedleDropAlbumScraper(self._checkpointer),
+            TheNeedleDropTrackScraper(self._checkpointer),
+        ]
 
     def run(self):
         digest = self._get_digest()
@@ -279,4 +279,5 @@ class BestNewMusicDigest:
         smtp.quit()
 
 if __name__ == "__main__":
+    load_dotenv()
     BestNewMusicDigest().run()
