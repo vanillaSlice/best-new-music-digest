@@ -296,7 +296,7 @@ class BestNewMusicDigest:
                 digest_html += "<li><a href=\"{}\">{} - {}</a></li>".format(i["link"], i["artist"], i["title"])
             digest_html += "</ol><br />"
 
-        digest_html += "<p>Until tomorrow 🤘</p>"
+        digest_html += "<p>Until next time 🤘</p>"
 
         return digest_html
 
@@ -304,7 +304,7 @@ class BestNewMusicDigest:
         try:
             return requests.get("https://icanhazdadjoke.com/", headers={"Accept": "application/json"}).json()["joke"]
         except:
-            return "It would seem that I've run out of dad jokes. I hope you're happy now."
+            return "It would seem that I've run out of dad jokes. I hope you're happy now 😞."
 
     def _send_email(self, content):
         smtp = smtplib.SMTP(host="smtp.gmail.com", port=587)
