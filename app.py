@@ -254,19 +254,19 @@ class Checkpointer:
 class BestNewMusicDigest:
 
     def __init__(self):
-        self._checkpointer = Checkpointer()
+        checkpointer = Checkpointer()
 
         self._scrapers = []
         if settings.SPUTNIKMUSIC_ALBUMS:
-            self._scrapers.append(SputnikmusicAlbumScraper(self._checkpointer))
+            self._scrapers.append(SputnikmusicAlbumScraper(checkpointer))
         if settings.PITCHFORK_ALBUMS:
-            self._scrapers.append(PitchforkAlbumScraper(self._checkpointer))
+            self._scrapers.append(PitchforkAlbumScraper(checkpointer))
         if settings.PITCHFORK_TRACKS:
-            self._scrapers.append(PitchforkTrackScraper(self._checkpointer))
+            self._scrapers.append(PitchforkTrackScraper(checkpointer))
         if settings.THE_NEEDLE_DROP_ALBUMS:
-            self._scrapers.append(TheNeedleDropAlbumScraper(self._checkpointer))
+            self._scrapers.append(TheNeedleDropAlbumScraper(checkpointer))
         if settings.THE_NEEDLE_DROP_TRACKS:
-            self._scrapers.append(TheNeedleDropTrackScraper(self._checkpointer))
+            self._scrapers.append(TheNeedleDropTrackScraper(checkpointer))
 
     def run(self):
         digest = self._get_digest()
