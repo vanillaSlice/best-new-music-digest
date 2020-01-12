@@ -257,19 +257,14 @@ class BestNewMusicDigest:
         self._checkpointer = Checkpointer()
 
         self._scrapers = []
-
         if settings.SPUTNIKMUSIC_ALBUMS:
             self._scrapers.append(SputnikmusicAlbumScraper(self._checkpointer))
-
         if settings.PITCHFORK_ALBUMS:
             self._scrapers.append(PitchforkAlbumScraper(self._checkpointer))
-
         if settings.PITCHFORK_TRACKS:
             self._scrapers.append(PitchforkTrackScraper(self._checkpointer))
-
         if settings.THE_NEEDLE_DROP_ALBUMS:
             self._scrapers.append(TheNeedleDropAlbumScraper(self._checkpointer))
-
         if settings.THE_NEEDLE_DROP_TRACKS:
             self._scrapers.append(TheNeedleDropTrackScraper(self._checkpointer))
 
