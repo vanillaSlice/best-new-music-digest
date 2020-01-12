@@ -8,7 +8,6 @@ __MANDATORY_PROPERTIES = [
     "MONGODB_URI",
     "RECIPIENT_EMAIL",
     "SENDER_EMAIL",
-    "SENDER_NAME",
     "SENDER_PASSWORD",
     "YOUTUBE_API_KEY",
 ]
@@ -25,6 +24,6 @@ if __missing_properties:
 MONGODB_URI = os.environ["MONGODB_URI"]
 RECIPIENT_EMAIL = os.environ["RECIPIENT_EMAIL"]
 SENDER_EMAIL = os.environ["SENDER_EMAIL"]
-SENDER_NAME = os.environ["SENDER_NAME"]
+SENDER_NAME = os.environ.get("SENDER_NAME", "Best New Music Digest")
 SENDER_PASSWORD = os.environ["SENDER_PASSWORD"]
 YOUTUBE_API_KEY = os.environ["YOUTUBE_API_KEY"]
