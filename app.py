@@ -50,7 +50,7 @@ class Scraper:
             self._checkpointer.save_checkpoint(self._title, item)
             self._saved_checkpoint = True
 
-class SputnikmusicScraper(Scraper):
+class SputnikmusicAlbumScraper(Scraper):
 
     _BASE_URL = "https://www.sputnikmusic.com"
     _SCRAPE_URL = "{}/bestnewmusic".format(_BASE_URL)
@@ -256,13 +256,22 @@ class BestNewMusicDigest:
     def __init__(self):
         self._checkpointer = Checkpointer()
 
-        self._scrapers = [
-            SputnikmusicScraper(self._checkpointer),
-            PitchforkAlbumScraper(self._checkpointer),
-            PitchforkTrackScraper(self._checkpointer),
-            TheNeedleDropAlbumScraper(self._checkpointer),
-            TheNeedleDropTrackScraper(self._checkpointer),
-        ]
+        self._scrapers = []
+
+        if settings.SPUTNIKMUSIC_ALBUMS:
+            self._scrapers.append(SputnikmusicAlbumScraper(self._checkpointer))
+
+        if settings.PITCHFORK_ALBUMS:
+            self._scrapers.append(PitchforkAlbumScraper(self._checkpointer))
+
+        if settings.PITCHFORK_TRACKS:
+            self._scrapers.append(PitchforkTrackScraper(self._checkpointer))
+
+        if settings.THE_NEEDLE_DROP_ALBUMS:
+            self._scrapers.append(TheNeedleDropAlbumScraper(self._checkpointer))
+
+        if settings.THE_NEEDLE_DROP_TRACKS:
+            self._scrapers.append(TheNeedleDropTrackScraper(self._checkpointer))
 
     def run(self):
         digest = self._get_digest()
