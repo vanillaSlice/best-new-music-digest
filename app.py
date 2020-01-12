@@ -9,6 +9,7 @@ import smtplib
 import sys
 
 from bs4 import BeautifulSoup
+from jinja2 import Environment, FileSystemLoader
 from pymongo import MongoClient
 import requests
 
@@ -281,7 +282,8 @@ class BestNewMusicDigest:
     def run(self):
         digest = self.__get_digest()
         if self.__should_send_email(digest):
-            self._send_email(self.__to_html(digest))
+            dad_joke = self.__get_dad_joke()
+            self.__send_email(self.__to_email(digest, dad_joke))
 
     def __get_digest(self):
         return [scraper.scrape() for scraper in self._scrapers]
@@ -289,36 +291,17 @@ class BestNewMusicDigest:
     def __should_send_email(self, digest):
         return any(d["items"] or d["errors"] for d in digest)
 
-    def __to_html(self, digest):
-        digest_html = "<p>Sappenin' bro?</p>"
-        digest_html += "<p><em>{}</em> 🤦‍♂️</p>".format(self.__get_dad_joke())
-        digest_html += "<p>Anyway, here's some choons to stick in your ear holes:</p><br />"
-
-        for d in digest:
-            digest_html += "<h3><a href=\"{}\">{}</a></h3>".format(d["link"], d["title"])
-
-            if d["errors"]:
-                digest_html += "<p><strong>😱 Error getting digest 😱</strong></p><br />"
-                continue
-
-            if not d["items"]:
-                digest_html += "<p>No updates today!</p><br />"
-                continue
-
-            digest_html += "<ol>"
-            for i in d["items"]:
-                digest_html += "<li><a href=\"{}\">{} - {}</a></li>".format(i["link"], i["artist"], i["title"])
-            digest_html += "</ol><br />"
-
-        digest_html += "<p>Until next time 🤘</p>"
-
-        return digest_html
-
     def __get_dad_joke(self):
         try:
             return requests.get("https://icanhazdadjoke.com/", headers={"Accept": "application/json"}).json()["joke"]
         except:
             return "It would seem that I've run out of dad jokes. I hope you're happy now 😞."
+
+    def __to_email(self, digest, dad_joke=None):
+        file_loader = FileSystemLoader('templates')
+        env = Environment(loader=file_loader)
+        template = env.get_template('email.html')
+        return template.render(digest=digest, dad_joke=dad_joke)
 
     def __send_email(self, content):
         smtp = smtplib.SMTP(host="smtp.gmail.com", port=587)
