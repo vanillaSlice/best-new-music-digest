@@ -282,7 +282,7 @@ class BestNewMusicDigest:
     def run(self):
         digest = self.__get_digest()
         if self.__should_send_email(digest):
-            dad_joke = self.__get_dad_joke()
+            dad_joke = self.__get_dad_joke() if settings.DAD_JOKE else None
             self.__send_email(self.__to_email(digest, dad_joke))
 
     def __get_digest(self):
@@ -297,7 +297,7 @@ class BestNewMusicDigest:
         except:
             return "It would seem that I've run out of dad jokes. I hope you're happy now 😞."
 
-    def __to_email(self, digest, dad_joke=None):
+    def __to_email(self, digest, dad_joke):
         file_loader = FileSystemLoader('templates')
         env = Environment(loader=file_loader)
         template = env.get_template('email.html')
