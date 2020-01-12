@@ -254,34 +254,44 @@ class Checkpointer:
 class BestNewMusicDigest:
 
     def __init__(self):
+        self._scrapers = self.__init_scrapers()
+
+    def __init_scrapers(self):
+        scrapers = []
+
         checkpointer = Checkpointer()
 
-        self._scrapers = []
         if settings.SPUTNIKMUSIC_ALBUMS:
-            self._scrapers.append(SputnikmusicAlbumScraper(checkpointer))
+            scrapers.append(SputnikmusicAlbumScraper(checkpointer))
+
         if settings.PITCHFORK_ALBUMS:
-            self._scrapers.append(PitchforkAlbumScraper(checkpointer))
+            scrapers.append(PitchforkAlbumScraper(checkpointer))
+
         if settings.PITCHFORK_TRACKS:
-            self._scrapers.append(PitchforkTrackScraper(checkpointer))
+            scrapers.append(PitchforkTrackScraper(checkpointer))
+
         if settings.THE_NEEDLE_DROP_ALBUMS:
-            self._scrapers.append(TheNeedleDropAlbumScraper(checkpointer))
+            scrapers.append(TheNeedleDropAlbumScraper(checkpointer))
+
         if settings.THE_NEEDLE_DROP_TRACKS:
-            self._scrapers.append(TheNeedleDropTrackScraper(checkpointer))
+            scrapers.append(TheNeedleDropTrackScraper(checkpointer))
+
+        return scrapers
 
     def run(self):
-        digest = self._get_digest()
-        if self._should_send_email(digest):
-            self._send_email(self._to_html(digest))
+        digest = self.__get_digest()
+        if self.__should_send_email(digest):
+            self._send_email(self.__to_html(digest))
 
-    def _get_digest(self):
+    def __get_digest(self):
         return [scraper.scrape() for scraper in self._scrapers]
 
-    def _should_send_email(self, digest):
+    def __should_send_email(self, digest):
         return any(d["items"] or d["errors"] for d in digest)
 
-    def _to_html(self, digest):
+    def __to_html(self, digest):
         digest_html = "<p>Sappenin' bro?</p>"
-        digest_html += "<p><em>{}</em> 🤦‍♂️</p>".format(self._get_dad_joke())
+        digest_html += "<p><em>{}</em> 🤦‍♂️</p>".format(self.__get_dad_joke())
         digest_html += "<p>Anyway, here's some choons to stick in your ear holes:</p><br />"
 
         for d in digest:
@@ -304,13 +314,13 @@ class BestNewMusicDigest:
 
         return digest_html
 
-    def _get_dad_joke(self):
+    def __get_dad_joke(self):
         try:
             return requests.get("https://icanhazdadjoke.com/", headers={"Accept": "application/json"}).json()["joke"]
         except:
             return "It would seem that I've run out of dad jokes. I hope you're happy now 😞."
 
-    def _send_email(self, content):
+    def __send_email(self, content):
         smtp = smtplib.SMTP(host="smtp.gmail.com", port=587)
         smtp.starttls()
         smtp.login(settings.SENDER_EMAIL, settings.SENDER_PASSWORD)
