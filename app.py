@@ -4,15 +4,15 @@ from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
-import os
 import re
 import smtplib
 import sys
 
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 from pymongo import MongoClient
 import requests
+
+import settings
 
 class Scraper:
 
@@ -168,7 +168,7 @@ class TheNeedleDropAlbumScraper(Scraper):
 
         response = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&" \
                                 "playlistId=PLP4CSgl7K7oo93I49tQa0TLB8qY3u7xuO&" \
-                                "key={}".format(os.environ["YOUTUBE_API_KEY"]))
+                                "key={}".format(settings.YOUTUBE_API_KEY))
 
         checkpoint = self._get_checkpoint()
 
@@ -204,7 +204,7 @@ class TheNeedleDropTrackScraper(Scraper):
 
         response = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&" \
                                 "playlistId=PLP4CSgl7K7or84AAhr7zlLNpghEnKWu2c&" \
-                                "key={}".format(os.environ["YOUTUBE_API_KEY"]))
+                                "key={}".format(settings.YOUTUBE_API_KEY))
 
         checkpoint = self._get_checkpoint()
 
@@ -242,7 +242,7 @@ class TheNeedleDropTrackScraper(Scraper):
 class Checkpointer:
 
     def __init__(self):
-        self.checkpoints = MongoClient(os.environ["MONGODB_URI"])["best-new-music-digest"].checkpoints
+        self.checkpoints = MongoClient(settings.MONGODB_URI)["best-new-music-digest"].checkpoints
 
     def get_checkpoint(self, name):
         checkpoint = self.checkpoints.find_one({ "name": name })
@@ -309,15 +309,14 @@ class BestNewMusicDigest:
     def _send_email(self, content):
         smtp = smtplib.SMTP(host="smtp.gmail.com", port=587)
         smtp.starttls()
-        smtp.login(os.environ["SENDER_EMAIL"], os.environ["SENDER_PASSWORD"])
+        smtp.login(settings.SENDER_EMAIL, settings.SENDER_PASSWORD)
         msg = MIMEMultipart()
-        msg["From"] = os.environ["SENDER_NAME"]
-        msg["To"] = os.environ["RECIPIENT_EMAIL"]
+        msg["From"] = settings.SENDER_NAME
+        msg["To"] = settings.RECIPIENT_EMAIL
         msg["Subject"] = "🎧 Best New Music - {} 🎧".format(datetime.now().strftime("%d/%m/%Y"))
         msg.attach(MIMEText(content, "html"))
         smtp.send_message(msg)
         smtp.quit()
 
 if __name__ == "__main__":
-    load_dotenv()
     BestNewMusicDigest().run()
