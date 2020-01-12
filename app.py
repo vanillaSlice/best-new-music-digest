@@ -289,7 +289,7 @@ class BestNewMusicDigest:
         return [scraper.scrape() for scraper in self._scrapers]
 
     def __should_send_email(self, digest):
-        return any(d["items"] or d["errors"] for d in digest)
+        return any(d["items"] or d["errors"] for d in digest) or settings.ALWAYS_EMAIL
 
     def __get_dad_joke(self):
         try:

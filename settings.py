@@ -27,6 +27,7 @@ __check_properties_present([
     "SENDER_PASSWORD",
 ])
 
+ALWAYS_EMAIL = __get_env_var_bool("ALWAYS_EMAIL", False)
 DAD_JOKE = __get_env_var_bool("DAD_JOKE")
 MONGODB_URI = __get_env_var("MONGODB_URI")
 PITCHFORK_ALBUMS = __get_env_var_bool("PITCHFORK_ALBUMS")
