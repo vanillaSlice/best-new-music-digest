@@ -69,17 +69,18 @@ class SputnikmusicAlbumScraper(Scraper):
 
         for td in soup.find_all("td", "bestnewmusic"):
             a = td.find("a")
+            link = "{}{}".format(self._BASE_URL, a.get("href"))
+
+            if link == checkpoint:
+                break
+
+            self._save_checkpoint(link)
 
             item = {
                 "artist": a.find("strong").contents[0],
                 "title": a.find_all("font")[1].contents[1],
-                "link": "{}{}".format(self._BASE_URL, a.get("href")),
+                "link": link,
             }
-
-            if item == checkpoint:
-                break
-
-            self._save_checkpoint(item)
 
             items.append(item)
 
@@ -102,16 +103,18 @@ class PitchforkAlbumScraper(Scraper):
         checkpoint = self._get_checkpoint()
 
         for div in soup.find_all("div", "review"):
+            link = "{}{}".format(self._BASE_URL, div.find("a").get("href"))
+
+            if link == checkpoint:
+                break
+
+            self._save_checkpoint(link)
+
             item = {
                 "artist": " / ".join([li.contents[0] for li in div.find("ul").find_all("li")]),
                 "title": div.find("h2").contents[0],
-                "link": "{}{}".format(self._BASE_URL, div.find("a").get("href")),
+                "link": link,
             }
-
-            if item == checkpoint:
-                break
-
-            self._save_checkpoint(item)
 
             items.append(item)
 
@@ -134,17 +137,18 @@ class PitchforkTrackScraper(Scraper):
         checkpoint = self._get_checkpoint()
 
         details = soup.find("div", "track-details")
+        link = "{}{}".format(self._BASE_URL, details.find("a").get("href"))
+
+        if link == checkpoint:
+            return []
+
+        self._save_checkpoint(link)
 
         item = {
             "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
             "title": details.find("h2").contents[0][1:-1],
-            "link": "{}{}".format(self._BASE_URL, details.find("a").get("href")),
+            "link": link,
         }
-
-        if item == checkpoint:
-            return []
-
-        self._save_checkpoint(item)
 
         items.append(item)
 
@@ -175,18 +179,20 @@ class TheNeedleDropAlbumScraper(Scraper):
 
         for response_item in response.json()["items"]:
             snippet = response_item["snippet"]
+            link = "{}/watch?v={}".format(self._BASE_URL, snippet["resourceId"]["videoId"])
+
+            if link == checkpoint:
+                break
+
+            self._save_checkpoint(link)
+
             video_title = snippet["title"].split(" - ")
 
             item = {
                 "artist": video_title[0],
                 "title": video_title[1].replace("ALBUM REVIEW", ""),
-                "link": "{}/watch?v={}".format(self._BASE_URL, snippet["resourceId"]["videoId"]),
+                "link": link,
             }
-
-            if item == checkpoint:
-                break
-
-            self._save_checkpoint(item)
 
             items.append(item)
 
@@ -217,12 +223,10 @@ class TheNeedleDropTrackScraper(Scraper):
 
             link = "{}/watch?v={}".format(self._BASE_URL, snippet["resourceId"]["videoId"])
 
-            new_checkpoint = { "link": link }
-
-            if new_checkpoint == checkpoint:
+            if link == checkpoint:
                 break
 
-            self._save_checkpoint(new_checkpoint)
+            self._save_checkpoint(link)
 
             for line in self._pattern.findall(snippet["description"])[0].split("\n"):
                 if " - " not in line:
@@ -247,10 +251,14 @@ class Checkpointer:
 
     def get_checkpoint(self, name):
         checkpoint = self.checkpoints.find_one({ "name": name })
-        return checkpoint["checkpoint"] if checkpoint else {}
+        return checkpoint["link"] if checkpoint else ""
 
-    def save_checkpoint(self, name, checkpoint):
-        self.checkpoints.insert_one({ "name": name, "checkpoint": checkpoint })
+    def save_checkpoint(self, name, link):
+        self.checkpoints.find_one_and_update(
+            { "name": name },
+            { "$set": { "link": link }},
+            upsert=True,
+        )
 
 class BestNewMusicDigest:
 
