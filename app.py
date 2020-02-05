@@ -153,10 +153,15 @@ class PitchforkTrackScraper(Scraper):
         items.append(item)
 
         for details in soup.find_all("a", "track-collection-item__track-link"):
+            link = "{}{}".format(self._BASE_URL, details.get("href"))
+
+            if link == checkpoint:
+                break
+
             items.append({
                 "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
                 "title": details.find("h2").contents[0][1:-1],
-                "link": "{}{}".format(self._BASE_URL, details.get("href")),
+                "link": link,
             })
 
         return items
