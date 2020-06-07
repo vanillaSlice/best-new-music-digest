@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 
-from datetime import datetime
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import logging
 import re
 import smtplib
 import sys
+from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
+import requests
 from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 from pymongo import MongoClient
-import requests
 
 from best_new_music_digest import settings
+from best_new_music_digest.checkpoint import Checkpointer
+
 
 class Scraper:
 
@@ -249,21 +251,6 @@ class TheNeedleDropTrackScraper(Scraper):
 
         return items
 
-class Checkpointer:
-
-    def __init__(self):
-        self.checkpoints = MongoClient(settings.MONGODB_URI)["best-new-music-digest"].checkpoints
-
-    def get_checkpoint(self, name):
-        checkpoint = self.checkpoints.find_one({ "name": name })
-        return checkpoint["link"] if checkpoint else ""
-
-    def save_checkpoint(self, name, link):
-        self.checkpoints.find_one_and_update(
-            { "name": name },
-            { "$set": { "link": link }},
-            upsert=True,
-        )
 
 class BestNewMusicDigest:
 
