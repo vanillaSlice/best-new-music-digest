@@ -1,6 +1,9 @@
-# pylint: disable=missing-function-docstring, missing-module-docstring
+# pylint: disable=import-outside-toplevel, missing-function-docstring, missing-module-docstring
 
 import os
+from unittest.mock import patch
+
+import mongomock
 
 ALWAYS_EMAIL = False
 DAD_JOKE = True
@@ -30,3 +33,14 @@ def set_env_vars():
     os.environ["THE_NEEDLE_DROP_ALBUMS"] = str(THE_NEEDLE_DROP_ALBUMS)
     os.environ["THE_NEEDLE_DROP_TRACKS"] = str(THE_NEEDLE_DROP_TRACKS)
     os.environ["YOUTUBE_API_KEY"] = YOUTUBE_API_KEY
+
+def mock_checkpointer():
+    set_env_vars()
+    from best_new_music_digest.checkpoint import Checkpointer
+    with patch("best_new_music_digest.checkpoint.MongoClient") as client:
+        client.return_value = mongomock.MongoClient()
+        return  Checkpointer()
+
+def load_test_data(file_name):
+    with open(os.path.join(os.path.dirname(__file__), "test_data", file_name)) as test_data:
+        return test_data.read()

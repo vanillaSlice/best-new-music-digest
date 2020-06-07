@@ -16,7 +16,7 @@ def __check_properties_present(properties):
             missing_properties.append(prop)
 
     if missing_properties:
-        raise Exception("Missing mandatory properties: {}.".format(missing_properties))
+        raise Exception(f"Missing mandatory properties: {missing_properties}.")
 
 def __get_env_var(prop, default=None):
     return os.environ.get(prop, str(default))

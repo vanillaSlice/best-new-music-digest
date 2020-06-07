@@ -15,6 +15,7 @@ from pymongo import MongoClient
 
 from best_new_music_digest import settings
 from best_new_music_digest.checkpoint import Checkpointer
+from best_new_music_digest.scrapers import sputnikmusic
 
 
 class Scraper:
@@ -52,41 +53,6 @@ class Scraper:
         if not self._saved_checkpoint:
             self._checkpointer.save_checkpoint(self._title, item)
             self._saved_checkpoint = True
-
-class SputnikmusicAlbumScraper(Scraper):
-
-    _BASE_URL = "https://www.sputnikmusic.com"
-    _SCRAPE_URL = "{}/bestnewmusic".format(_BASE_URL)
-
-    def __init__(self, checkpointer):
-        super().__init__(checkpointer, "Sputnikmusic Albums", self._SCRAPE_URL)
-
-    def _get_items(self):
-        items = []
-
-        response = requests.get(self._SCRAPE_URL)
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        checkpoint = self._get_checkpoint()
-
-        for td in soup.find_all("td", "bestnewmusic"):
-            a = td.find("a")
-            link = "{}{}".format(self._BASE_URL, a.get("href"))
-
-            if link == checkpoint:
-                break
-
-            self._save_checkpoint(link)
-
-            item = {
-                "artist": a.find("strong").contents[0],
-                "title": a.find_all("font")[1].contents[1],
-                "link": link,
-            }
-
-            items.append(item)
-
-        return items
 
 class PitchforkAlbumScraper(Scraper):
 
@@ -263,7 +229,7 @@ class BestNewMusicDigest:
         checkpointer = Checkpointer()
 
         if settings.SPUTNIKMUSIC_ALBUMS:
-            scrapers.append(SputnikmusicAlbumScraper(checkpointer))
+            scrapers.append(sputnikmusic.AlbumScraper(checkpointer))
 
         if settings.PITCHFORK_ALBUMS:
             scrapers.append(PitchforkAlbumScraper(checkpointer))
