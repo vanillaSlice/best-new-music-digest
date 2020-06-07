@@ -47,3 +47,42 @@ class TestAlbumScraper(unittest.TestCase):
             items = self.__scraper.scrape()
 
         assert items == json.loads(fixtures.load_test_data(output))
+
+class TestTrackScraper(unittest.TestCase):
+
+    def setUp(self):
+        self.__checkpointer = fixtures.mock_checkpointer()
+        self.__scraper = pitchfork.TrackScraper(self.__checkpointer)
+
+    def test_scrape_without_checkpoint(self):
+        self.__test_scrape("pitchfork_tracks_output_without_checkpoint.json")
+
+    def test_scrape_with_checkpoint(self):
+        self.__checkpointer.save_checkpoint(
+            "Pitchfork Tracks",
+            "https://www.pitchfork.com/reviews/tracks/" \
+            "megan-thee-stallion-savage-remix-ft-beyonce/"
+        )
+
+        self.__test_scrape("pitchfork_tracks_output_with_checkpoint.json")
+
+    def test_scrape_up_to_date(self):
+        self.__checkpointer.save_checkpoint(
+            "Pitchfork Tracks",
+            "https://www.pitchfork.com/reviews/tracks/medhane-im-deadass/"
+        )
+
+        self.__test_scrape("pitchfork_tracks_output_up_to_date.json")
+
+    def test_scrape_saves_checkpoint(self):
+        self.__test_scrape("pitchfork_tracks_output_without_checkpoint.json")
+        self.__test_scrape("pitchfork_tracks_output_up_to_date.json")
+
+    def __test_scrape(self, output):
+        test_data = fixtures.load_test_data("pitchfork_tracks_input.html")
+
+        with requests_mock.Mocker() as req_mock:
+            req_mock.get("https://www.pitchfork.com/reviews/best/tracks/", text=test_data)
+            items = self.__scraper.scrape()
+
+        assert items == json.loads(fixtures.load_test_data(output))

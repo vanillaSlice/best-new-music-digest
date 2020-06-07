@@ -46,3 +46,52 @@ class AlbumScraper(Scraper):
             items.append(item)
 
         return items
+
+class TrackScraper(Scraper):
+    """
+    Pitchfork track scraper.
+    """
+
+    __BASE_URL = "https://www.pitchfork.com"
+    __SCRAPE_URL = f"{__BASE_URL}/reviews/best/tracks/"
+
+    def __init__(self, checkpointer):
+        super().__init__(checkpointer, "Pitchfork Tracks", self.__SCRAPE_URL)
+
+    def _get_items(self):
+        items = []
+
+        response = requests.get(self.__SCRAPE_URL)
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        checkpoint = self._get_checkpoint()
+
+        details = soup.find("div", "track-details")
+        link = f"{self.__BASE_URL}{details.find('a').get('href')}"
+
+        if link == checkpoint:
+            return []
+
+        self._save_checkpoint(link)
+
+        item = {
+            "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
+            "title": details.find("h2").contents[0][1:-1],
+            "link": link,
+        }
+
+        items.append(item)
+
+        for details in soup.find_all("a", "track-collection-item__track-link"):
+            link = f"{self.__BASE_URL}{details.get('href')}"
+
+            if link == checkpoint:
+                break
+
+            items.append({
+                "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
+                "title": details.find("h2").contents[0][1:-1],
+                "link": link,
+            })
+
+        return items

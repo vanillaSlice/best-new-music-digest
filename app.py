@@ -54,52 +54,6 @@ class Scraper:
             self._checkpointer.save_checkpoint(self._title, item)
             self._saved_checkpoint = True
 
-class PitchforkTrackScraper(Scraper):
-
-    _BASE_URL = "https://www.pitchfork.com"
-    _SCRAPE_URL = "{}/reviews/best/tracks/".format(_BASE_URL)
-
-    def __init__(self, checkpointer):
-        super().__init__(checkpointer, "Pitchfork Tracks", self._SCRAPE_URL)
-
-    def _get_items(self):
-        items = []
-
-        response = requests.get(self._SCRAPE_URL)
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        checkpoint = self._get_checkpoint()
-
-        details = soup.find("div", "track-details")
-        link = "{}{}".format(self._BASE_URL, details.find("a").get("href"))
-
-        if link == checkpoint:
-            return []
-
-        self._save_checkpoint(link)
-
-        item = {
-            "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
-            "title": details.find("h2").contents[0][1:-1],
-            "link": link,
-        }
-
-        items.append(item)
-
-        for details in soup.find_all("a", "track-collection-item__track-link"):
-            link = "{}{}".format(self._BASE_URL, details.get("href"))
-
-            if link == checkpoint:
-                break
-
-            items.append({
-                "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
-                "title": details.find("h2").contents[0][1:-1],
-                "link": link,
-            })
-
-        return items
-
 class TheNeedleDropAlbumScraper(Scraper):
 
     _BASE_URL = "https://www.youtube.com"
@@ -201,7 +155,7 @@ class BestNewMusicDigest:
             scrapers.append(pitchfork.AlbumScraper(checkpointer))
 
         if settings.PITCHFORK_TRACKS:
-            scrapers.append(PitchforkTrackScraper(checkpointer))
+            scrapers.append(pitchfork.TrackScraper(checkpointer))
 
         if settings.THE_NEEDLE_DROP_ALBUMS:
             scrapers.append(TheNeedleDropAlbumScraper(checkpointer))
