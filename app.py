@@ -317,11 +317,11 @@ class BestNewMusicDigest:
         return template.render(digest=digest, dad_joke=dad_joke)
 
     def __send_email(self, content):
-        smtp = smtplib.SMTP(host="smtp.gmail.com", port=587)
+        smtp = smtplib.SMTP(host="smtp.sendgrid.net", port=587)
         smtp.starttls()
-        smtp.login(settings.SENDER_EMAIL, settings.SENDER_PASSWORD)
+        smtp.login("apikey", settings.SENDER_PASSWORD)
         msg = MIMEMultipart()
-        msg["From"] = settings.SENDER_NAME
+        msg["From"] = f"{settings.SENDER_NAME} <{settings.SENDER_EMAIL}>"
         msg["To"] = settings.RECIPIENT_EMAIL
         msg["Subject"] = "🎧 Best New Music - {} 🎧".format(datetime.now().strftime("%d/%m/%Y"))
         msg.attach(MIMEText(content, "html"))
