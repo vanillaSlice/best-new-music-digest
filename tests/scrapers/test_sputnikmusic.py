@@ -33,6 +33,10 @@ class TestAlbumScraper(unittest.TestCase):
 
         self.__test_scrape("sputnikmusic_albums_output_up_to_date.json")
 
+    def test_scrape_saves_checkpoint(self):
+        self.__test_scrape("sputnikmusic_albums_output_without_checkpoint.json")
+        self.__test_scrape("sputnikmusic_albums_output_up_to_date.json")
+
     def __test_scrape(self, output):
         test_data = fixtures.load_test_data("sputnikmusic_albums_input.html")
 
