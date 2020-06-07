@@ -1,3 +1,7 @@
+"""
+Loads application settings.
+"""
+
 import os
 
 import dotenv
@@ -7,18 +11,18 @@ dotenv.load_dotenv()
 def __check_properties_present(properties):
     missing_properties = []
 
-    for property in properties:
-        if property not in os.environ:
-            missing_properties.append(property)
+    for prop in properties:
+        if prop not in os.environ:
+            missing_properties.append(prop)
 
     if missing_properties:
-        raise Exception("missing mandatory properties: {}".format(missing_properties))
+        raise Exception("Missing mandatory properties: {}.".format(missing_properties))
 
-def __get_env_var(property, default=None):
-    return os.environ.get(property, str(default))
+def __get_env_var(prop, default=None):
+    return os.environ.get(prop, str(default))
 
-def __get_env_var_bool(property, default=True):
-    return __get_env_var(property, default).lower() == "true"
+def __get_env_var_bool(prop, default=True):
+    return __get_env_var(prop, default).lower() == "true"
 
 __check_properties_present([
     "MONGODB_URI",
@@ -41,6 +45,6 @@ THE_NEEDLE_DROP_ALBUMS = __get_env_var_bool("THE_NEEDLE_DROP_ALBUMS")
 THE_NEEDLE_DROP_TRACKS = __get_env_var_bool("THE_NEEDLE_DROP_TRACKS")
 
 if THE_NEEDLE_DROP_ALBUMS or THE_NEEDLE_DROP_TRACKS:
-   __check_properties_present(["YOUTUBE_API_KEY"])
+    __check_properties_present(["YOUTUBE_API_KEY"])
 
 YOUTUBE_API_KEY = __get_env_var("YOUTUBE_API_KEY")

@@ -13,7 +13,7 @@ from jinja2 import Environment, FileSystemLoader
 from pymongo import MongoClient
 import requests
 
-import settings
+from best_new_music_digest import settings
 
 class Scraper:
 
