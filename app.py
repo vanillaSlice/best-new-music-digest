@@ -15,7 +15,7 @@ from pymongo import MongoClient
 
 from best_new_music_digest import settings
 from best_new_music_digest.checkpoint import Checkpointer
-from best_new_music_digest.scrapers import pitchfork, sputnikmusic
+from best_new_music_digest.scrapers import pitchfork, sputnikmusic, the_needle_drop
 
 
 class Scraper:
@@ -53,43 +53,6 @@ class Scraper:
         if not self._saved_checkpoint:
             self._checkpointer.save_checkpoint(self._title, item)
             self._saved_checkpoint = True
-
-class TheNeedleDropAlbumScraper(Scraper):
-
-    _BASE_URL = "https://www.youtube.com"
-
-    def __init__(self, checkpointer):
-        super().__init__(checkpointer, "The Needle Drop Albums", "{}/user/theneedledrop".format(self._BASE_URL))
-
-    def _get_items(self):
-        items = []
-
-        response = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&" \
-                                "playlistId=PLP4CSgl7K7oo93I49tQa0TLB8qY3u7xuO&" \
-                                "key={}".format(settings.YOUTUBE_API_KEY))
-
-        checkpoint = self._get_checkpoint()
-
-        for response_item in response.json()["items"]:
-            snippet = response_item["snippet"]
-            link = "{}/watch?v={}".format(self._BASE_URL, snippet["resourceId"]["videoId"])
-
-            if link == checkpoint:
-                break
-
-            self._save_checkpoint(link)
-
-            video_title = snippet["title"].split(" - ")
-
-            item = {
-                "artist": video_title[0],
-                "title": video_title[1].replace("ALBUM REVIEW", ""),
-                "link": link,
-            }
-
-            items.append(item)
-
-        return items
 
 class TheNeedleDropTrackScraper(Scraper):
 
@@ -158,7 +121,7 @@ class BestNewMusicDigest:
             scrapers.append(pitchfork.TrackScraper(checkpointer))
 
         if settings.THE_NEEDLE_DROP_ALBUMS:
-            scrapers.append(TheNeedleDropAlbumScraper(checkpointer))
+            scrapers.append(the_needle_drop.AlbumScraper(checkpointer))
 
         if settings.THE_NEEDLE_DROP_TRACKS:
             scrapers.append(TheNeedleDropTrackScraper(checkpointer))

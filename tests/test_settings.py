@@ -1,4 +1,4 @@
-# pylint: disable=import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring, too-many-public-methods
+# pylint: disable=bare-except, import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring, too-many-public-methods
 
 import os
 import unittest
@@ -15,6 +15,13 @@ class TestSettings(unittest.TestCase):
         fixtures.set_env_vars()
         from best_new_music_digest import settings
         self.__settings = settings
+
+    def tearDown(self):
+        fixtures.set_env_vars()
+        try:
+            reload(self.__settings)
+        except:
+            pass
 
     def test_always_email_not_set(self):
         self.__test_missing_property("ALWAYS_EMAIL", expected_value=False)

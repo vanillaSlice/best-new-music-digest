@@ -39,7 +39,7 @@ def mock_checkpointer():
     from best_new_music_digest.checkpoint import Checkpointer
     with patch("best_new_music_digest.checkpoint.MongoClient") as client:
         client.return_value = mongomock.MongoClient()
-        return  Checkpointer()
+        return Checkpointer()
 
 def load_test_data(file_name):
     with open(os.path.join(os.path.dirname(__file__), "test_data", file_name)) as test_data:

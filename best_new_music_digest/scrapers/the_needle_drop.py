@@ -1,0 +1,53 @@
+# pylint: disable=too-few-public-methods
+
+"""
+The Needle Drop scrapers.
+"""
+
+import requests
+
+from best_new_music_digest import settings
+from best_new_music_digest.scrapers import Scraper
+
+
+class AlbumScraper(Scraper):
+    """
+    The Needle Drop album scraper.
+    """
+
+    __BASE_URL = "https://www.youtube.com"
+
+    def __init__(self, checkpointer):
+        super().__init__(checkpointer,
+                         "The Needle Drop Albums",
+                         f"{self.__BASE_URL}/user/theneedledrop")
+
+    def _get_items(self):
+        items = []
+
+        response = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?" \
+                                "part=snippet&playlistId=PLP4CSgl7K7oo93I49tQa0TLB8qY3u7xuO&" \
+                                f"key={settings.YOUTUBE_API_KEY}")
+
+        checkpoint = self._get_checkpoint()
+
+        for response_item in response.json()["items"]:
+            snippet = response_item["snippet"]
+            link = f"{self.__BASE_URL}/watch?v={snippet['resourceId']['videoId']}"
+
+            if link == checkpoint:
+                break
+
+            self._save_checkpoint(link)
+
+            video_title = snippet["title"].split(" - ")
+
+            item = {
+                "artist": video_title[0],
+                "title": video_title[1].replace("ALBUM REVIEW", ""),
+                "link": link,
+            }
+
+            items.append(item)
+
+        return items
