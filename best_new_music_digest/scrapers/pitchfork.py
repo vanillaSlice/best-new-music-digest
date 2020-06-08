@@ -7,7 +7,7 @@ Pitchfork scrapers.
 import requests
 from bs4 import BeautifulSoup
 
-from best_new_music_digest.scrapers import Scraper
+from best_new_music_digest.scrapers.base import Scraper
 
 
 class AlbumScraper(Scraper):

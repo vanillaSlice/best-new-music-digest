@@ -2,7 +2,7 @@
 
 import unittest
 
-from best_new_music_digest.scrapers import Scraper
+from best_new_music_digest.scrapers.base import Scraper
 from tests import fixtures
 
 
