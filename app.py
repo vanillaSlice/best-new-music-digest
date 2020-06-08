@@ -1,104 +1,16 @@
 #!/usr/bin/env python3
 
-import logging
-import re
 import smtplib
-import sys
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import requests
-from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
-from pymongo import MongoClient
 
 from best_new_music_digest import settings
 from best_new_music_digest.checkpoint import Checkpointer
 from best_new_music_digest.scrapers import pitchfork, sputnikmusic, the_needle_drop
-
-
-class Scraper:
-
-    def __init__(self, checkpointer, title, link):
-        self._checkpointer = checkpointer
-        self._title = title
-        self._link = link
-        self._saved_checkpoint = False
-
-    def scrape(self):
-        errors = False
-
-        try:
-            items = self._get_items()
-        except Exception as e:
-            logging.error(e)
-            items = []
-            errors = True
-
-        return {
-            "title": self._title,
-            "link": self._link,
-            "items": items,
-            "errors": errors,
-        }
-
-    def _get_items(self):
-        return []
-
-    def _get_checkpoint(self):
-        return self._checkpointer.get_checkpoint(self._title)
-
-    def _save_checkpoint(self, item):
-        if not self._saved_checkpoint:
-            self._checkpointer.save_checkpoint(self._title, item)
-            self._saved_checkpoint = True
-
-class TheNeedleDropTrackScraper(Scraper):
-
-    _BASE_URL = "https://www.youtube.com"
-
-    def __init__(self, checkpointer):
-        super().__init__(checkpointer, "The Needle Drop Tracks", "{}/user/theneedledrop".format(self._BASE_URL))
-        self._pattern = re.compile(r"!!!BEST TRACKS THIS WEEK!!!(.*?)\.\.\.meh\.\.\.", re.DOTALL)
-
-    def _get_items(self):
-        items = []
-
-        response = requests.get("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&" \
-                                "playlistId=PLP4CSgl7K7or84AAhr7zlLNpghEnKWu2c&" \
-                                "key={}".format(settings.YOUTUBE_API_KEY))
-
-        checkpoint = self._get_checkpoint()
-
-        for response_item in response.json()["items"]:
-            snippet = response_item["snippet"]
-
-            if not snippet["title"].startswith("Weekly Track Roundup"):
-                continue
-
-            link = "{}/watch?v={}".format(self._BASE_URL, snippet["resourceId"]["videoId"])
-
-            if link == checkpoint:
-                break
-
-            self._save_checkpoint(link)
-
-            for line in self._pattern.findall(snippet["description"])[0].split("\n"):
-                if " - " not in line:
-                    continue
-
-                video_title = line.split(" - ")
-
-                item = {
-                    "artist": video_title[0],
-                    "title": video_title[1],
-                    "link": link,
-                }
-
-                items.append(item)
-
-        return items
 
 
 class BestNewMusicDigest:
@@ -124,7 +36,7 @@ class BestNewMusicDigest:
             scrapers.append(the_needle_drop.AlbumScraper(checkpointer))
 
         if settings.THE_NEEDLE_DROP_TRACKS:
-            scrapers.append(TheNeedleDropTrackScraper(checkpointer))
+            scrapers.append(the_needle_drop.TrackScraper(checkpointer))
 
         return scrapers
 
