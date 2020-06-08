@@ -45,7 +45,7 @@ class Scraper:
     def _get_checkpoint(self):
         return self.__checkpointer.get_checkpoint(self.__title)
 
-    def _save_checkpoint(self, item):
+    def _save_checkpoint(self, link):
         if not self.__saved_checkpoint:
-            self.__checkpointer.save_checkpoint(self.__title, item)
+            self.__checkpointer.save_checkpoint(self.__title, link)
             self.__saved_checkpoint = True
