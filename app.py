@@ -5,10 +5,10 @@ from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import requests
 from jinja2 import Environment, FileSystemLoader
 
 from best_new_music_digest import settings
+from best_new_music_digest.dad_joke import get_dad_joke
 from best_new_music_digest.scrapers import factory
 
 
@@ -20,7 +20,7 @@ class BestNewMusicDigest:
     def run(self):
         digest = self.__get_digest()
         if self.__should_send_email(digest):
-            dad_joke = self.__get_dad_joke() if settings.DAD_JOKE else None
+            dad_joke = get_dad_joke() if settings.DAD_JOKE else None
             self.__send_email(self.__to_email(digest, dad_joke))
 
     def __get_digest(self):
@@ -28,12 +28,6 @@ class BestNewMusicDigest:
 
     def __should_send_email(self, digest):
         return any(d["items"] or d["errors"] for d in digest) or settings.ALWAYS_EMAIL
-
-    def __get_dad_joke(self):
-        try:
-            return requests.get("https://icanhazdadjoke.com/", headers={"Accept": "application/json"}).json()["joke"]
-        except:
-            return "It would seem that I've run out of dad jokes. I hope you're happy now 😞."
 
     def __to_email(self, digest, dad_joke):
         file_loader = FileSystemLoader('templates')
