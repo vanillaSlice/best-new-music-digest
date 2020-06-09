@@ -32,23 +32,23 @@ class TestFactory(unittest.TestCase):
 
     def test_get_scrapers_pitchfork_albums(self):
         os.environ["PITCHFORK_ALBUMS"] = "true"
-        self._test_expected_scrapers_created(["Pitchfork Albums"])
+        self.__test_get_scrapers(["Pitchfork Albums"])
 
     def test_get_scrapers_pitchfork_tracks(self):
         os.environ["PITCHFORK_TRACKS"] = "true"
-        self._test_expected_scrapers_created(["Pitchfork Tracks"])
+        self.__test_get_scrapers(["Pitchfork Tracks"])
 
     def test_get_scrapers_sputnikmusic_albums(self):
         os.environ["SPUTNIKMUSIC_ALBUMS"] = "true"
-        self._test_expected_scrapers_created(["Sputnikmusic Albums"])
+        self.__test_get_scrapers(["Sputnikmusic Albums"])
 
     def test_get_scrapers_the_needle_drop_albums(self):
         os.environ["THE_NEEDLE_DROP_ALBUMS"] = "true"
-        self._test_expected_scrapers_created(["The Needle Drop Albums"])
+        self.__test_get_scrapers(["The Needle Drop Albums"])
 
     def test_get_scrapers_the_needle_drop_tracks(self):
         os.environ["THE_NEEDLE_DROP_TRACKS"] = "true"
-        self._test_expected_scrapers_created(["The Needle Drop Tracks"])
+        self.__test_get_scrapers(["The Needle Drop Tracks"])
 
     def test_get_scrapers_all_scrapers(self):
         os.environ["PITCHFORK_ALBUMS"] = "true"
@@ -57,7 +57,7 @@ class TestFactory(unittest.TestCase):
         os.environ["THE_NEEDLE_DROP_ALBUMS"] = "true"
         os.environ["THE_NEEDLE_DROP_TRACKS"] = "true"
 
-        self._test_expected_scrapers_created([
+        self.__test_get_scrapers([
             "Pitchfork Albums",
             "Pitchfork Tracks",
             "Sputnikmusic Albums",
@@ -65,7 +65,7 @@ class TestFactory(unittest.TestCase):
             "The Needle Drop Tracks",
         ])
 
-    def _test_expected_scrapers_created(self, expected_scrapers):
+    def __test_get_scrapers(self, expected_scrapers):
         reload(self.__settings)
 
         actual_scrapers = self.__factory.get_scrapers()
