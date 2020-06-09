@@ -1,6 +1,5 @@
 # pylint: disable=import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring
 
-import json
 from unittest.mock import patch
 
 from tests import fixtures
@@ -64,8 +63,8 @@ class TestEmail(fixtures.TestBase):
     @patch("best_new_music_digest.email.SendGridAPIClient.send")
     def test_send_email_digest(self, send):
         self.__email.send_email([
-            json.loads(self._load_test_data("the_needle_drop_albums_output_with_checkpoint.json")),
-            json.loads(self._load_test_data("the_needle_drop_tracks_output_with_checkpoint.json")),
+            self._load_json_test_data("the_needle_drop_albums_output_with_checkpoint.json"),
+            self._load_json_test_data("the_needle_drop_tracks_output_with_checkpoint.json"),
         ])
 
         send.assert_called()

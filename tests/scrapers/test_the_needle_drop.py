@@ -1,7 +1,5 @@
 # pylint: disable=import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring
 
-import json
-
 import requests_mock
 
 from tests import fixtures
@@ -47,7 +45,7 @@ class TestAlbumScraper(fixtures.TestBase):
                          f"key={self._settings.YOUTUBE_API_KEY}", text=test_data)
             items = self.__scraper.scrape()
 
-        assert items == json.loads(self._load_test_data(output))
+        assert items == self._load_json_test_data(output)
 
 class TestTrackScraper(fixtures.TestBase):
 
@@ -91,4 +89,4 @@ class TestTrackScraper(fixtures.TestBase):
                          f"key={self._settings.YOUTUBE_API_KEY}", text=test_data)
             items = self.__scraper.scrape()
 
-        assert items == json.loads(self._load_test_data(output))
+        assert items == self._load_json_test_data(output)

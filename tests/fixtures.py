@@ -1,5 +1,6 @@
 # pylint: disable=bare-except, import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring
 
+import json
 import os
 import unittest
 from importlib import reload
@@ -32,6 +33,10 @@ class TestBase(unittest.TestCase):
     def _load_test_data(file_name):
         with open(os.path.join(os.path.dirname(__file__), "test_data", file_name)) as test_data:
             return test_data.read()
+
+    @staticmethod
+    def _load_json_test_data(file_name):
+        return json.loads(TestBase._load_test_data(file_name))
 
     @staticmethod
     def __set_env_vars():

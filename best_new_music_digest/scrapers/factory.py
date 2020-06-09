@@ -17,14 +17,14 @@ def get_scrapers():
 
     checkpointer = Checkpointer()
 
-    if settings.SPUTNIKMUSIC_ALBUMS:
-        scrapers.append(sputnikmusic.AlbumScraper(checkpointer))
-
     if settings.PITCHFORK_ALBUMS:
         scrapers.append(pitchfork.AlbumScraper(checkpointer))
 
     if settings.PITCHFORK_TRACKS:
         scrapers.append(pitchfork.TrackScraper(checkpointer))
+
+    if settings.SPUTNIKMUSIC_ALBUMS:
+        scrapers.append(sputnikmusic.AlbumScraper(checkpointer))
 
     if settings.THE_NEEDLE_DROP_ALBUMS:
         scrapers.append(the_needle_drop.AlbumScraper(checkpointer))

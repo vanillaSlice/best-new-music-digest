@@ -1,7 +1,5 @@
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring
 
-import json
-
 import requests_mock
 
 from best_new_music_digest.scrapers import sputnikmusic
@@ -44,4 +42,4 @@ class TestAlbumScraper(fixtures.TestBase):
             req_mock.get("https://www.sputnikmusic.com/bestnewmusic", text=test_data)
             items = self.__scraper.scrape()
 
-        assert items == json.loads(self._load_test_data(output))
+        assert items == self._load_json_test_data(output)
