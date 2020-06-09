@@ -33,4 +33,4 @@ def send_email(digest, dad_joke=None):
         "digest": digest,
     }
 
-    SendGridAPIClient(settings.SENDER_PASSWORD).send(message)
+    SendGridAPIClient(settings.SENDGRID_API_KEY).send(message)

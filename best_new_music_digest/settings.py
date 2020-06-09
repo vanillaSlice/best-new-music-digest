@@ -28,7 +28,7 @@ __check_properties_present([
     "MONGODB_URI",
     "RECIPIENT_EMAIL",
     "SENDER_EMAIL",
-    "SENDER_PASSWORD",
+    "SENDGRID_API_KEY",
     "SENDGRID_TEMPLATE_ID",
 ])
 
@@ -40,7 +40,7 @@ PITCHFORK_TRACKS = __get_env_var_bool("PITCHFORK_TRACKS")
 RECIPIENT_EMAIL = __get_env_var("RECIPIENT_EMAIL")
 SENDER_EMAIL = __get_env_var("SENDER_EMAIL")
 SENDER_NAME = __get_env_var("SENDER_NAME", "Best New Music Digest")
-SENDER_PASSWORD = __get_env_var("SENDER_PASSWORD")
+SENDGRID_API_KEY = __get_env_var("SENDGRID_API_KEY")
 SENDGRID_TEMPLATE_ID = __get_env_var("SENDGRID_TEMPLATE_ID")
 SPUTNIKMUSIC_ALBUMS = __get_env_var_bool("SPUTNIKMUSIC_ALBUMS")
 THE_NEEDLE_DROP_ALBUMS = __get_env_var_bool("THE_NEEDLE_DROP_ALBUMS")
