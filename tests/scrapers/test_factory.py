@@ -1,61 +1,48 @@
-# pylint: disable=bare-except, import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring
-
-import os
-import unittest
-from importlib import reload
+# pylint: disable=import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring
 
 from tests import fixtures
 
 
-class TestFactory(unittest.TestCase):
+class TestFactory(fixtures.TestBase):
 
     def setUp(self):
-        fixtures.set_env_vars()
+        super().setUp()
 
-        os.environ["PITCHFORK_ALBUMS"] = "false"
-        os.environ["PITCHFORK_TRACKS"] = "false"
-        os.environ["SPUTNIKMUSIC_ALBUMS"] = "false"
-        os.environ["THE_NEEDLE_DROP_ALBUMS"] = "false"
-        os.environ["THE_NEEDLE_DROP_TRACKS"] = "false"
+        self._settings.PITCHFORK_ALBUMS = False
+        self._settings.PITCHFORK_TRACKS = False
+        self._settings.SPUTNIKMUSIC_ALBUMS = False
+        self._settings.THE_NEEDLE_DROP_ALBUMS = False
+        self._settings.THE_NEEDLE_DROP_TRACKS = False
 
-        from best_new_music_digest import settings
-        self.__settings = settings
         from best_new_music_digest.scrapers import factory
         self.__factory = factory
 
-    def tearDown(self):
-        fixtures.set_env_vars()
-        try:
-            reload(self.__settings)
-        except:
-            pass
-
     def test_get_scrapers_pitchfork_albums(self):
-        os.environ["PITCHFORK_ALBUMS"] = "true"
+        self._settings.PITCHFORK_ALBUMS = True
         self.__test_get_scrapers(["Pitchfork Albums"])
 
     def test_get_scrapers_pitchfork_tracks(self):
-        os.environ["PITCHFORK_TRACKS"] = "true"
+        self._settings.PITCHFORK_TRACKS = True
         self.__test_get_scrapers(["Pitchfork Tracks"])
 
     def test_get_scrapers_sputnikmusic_albums(self):
-        os.environ["SPUTNIKMUSIC_ALBUMS"] = "true"
+        self._settings.SPUTNIKMUSIC_ALBUMS = True
         self.__test_get_scrapers(["Sputnikmusic Albums"])
 
     def test_get_scrapers_the_needle_drop_albums(self):
-        os.environ["THE_NEEDLE_DROP_ALBUMS"] = "true"
+        self._settings.THE_NEEDLE_DROP_ALBUMS = True
         self.__test_get_scrapers(["The Needle Drop Albums"])
 
     def test_get_scrapers_the_needle_drop_tracks(self):
-        os.environ["THE_NEEDLE_DROP_TRACKS"] = "true"
+        self._settings.THE_NEEDLE_DROP_TRACKS = True
         self.__test_get_scrapers(["The Needle Drop Tracks"])
 
     def test_get_scrapers_all_scrapers(self):
-        os.environ["PITCHFORK_ALBUMS"] = "true"
-        os.environ["PITCHFORK_TRACKS"] = "true"
-        os.environ["SPUTNIKMUSIC_ALBUMS"] = "true"
-        os.environ["THE_NEEDLE_DROP_ALBUMS"] = "true"
-        os.environ["THE_NEEDLE_DROP_TRACKS"] = "true"
+        self._settings.PITCHFORK_ALBUMS = True
+        self._settings.PITCHFORK_TRACKS = True
+        self._settings.SPUTNIKMUSIC_ALBUMS = True
+        self._settings.THE_NEEDLE_DROP_ALBUMS = True
+        self._settings.THE_NEEDLE_DROP_TRACKS = True
 
         self.__test_get_scrapers([
             "Pitchfork Albums",
@@ -66,8 +53,6 @@ class TestFactory(unittest.TestCase):
         ])
 
     def __test_get_scrapers(self, expected_scrapers):
-        reload(self.__settings)
-
         actual_scrapers = self.__factory.get_scrapers()
 
         assert len(actual_scrapers) == len(expected_scrapers)

@@ -1,7 +1,6 @@
-# pylint: disable=bare-except, import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring, too-many-public-methods
+# pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring, too-many-public-methods
 
 import os
-import unittest
 from importlib import reload
 
 import pytest
@@ -9,19 +8,7 @@ import pytest
 from tests import fixtures
 
 
-class TestSettings(unittest.TestCase):
-
-    def setUp(self):
-        fixtures.set_env_vars()
-        from best_new_music_digest import settings
-        self.__settings = settings
-
-    def tearDown(self):
-        fixtures.set_env_vars()
-        try:
-            reload(self.__settings)
-        except:
-            pass
+class TestSettings(fixtures.TestBase):
 
     def test_always_email_not_set(self):
         self.__test_missing_property("ALWAYS_EMAIL", expected_value=False)
@@ -116,7 +103,7 @@ class TestSettings(unittest.TestCase):
         del os.environ["SENDER_EMAIL"]
         del os.environ["SENDER_PASSWORD"]
         with pytest.raises(Exception) as exception:
-            reload(self.__settings)
+            reload(self._settings)
         assert str(exception.value) == "Missing mandatory properties: ['MONGODB_URI', " \
                                        "'RECIPIENT_EMAIL', 'SENDER_EMAIL', 'SENDER_PASSWORD']."
 
@@ -126,11 +113,11 @@ class TestSettings(unittest.TestCase):
 
         if expect_exception:
             with pytest.raises(Exception) as exception:
-                reload(self.__settings)
+                reload(self._settings)
             assert str(exception.value) == f"Missing mandatory properties: ['{property_name}']."
         else:
-            reload(self.__settings)
-            assert getattr(self.__settings, property_name) == expected_value
+            reload(self._settings)
+            assert getattr(self._settings, property_name) == expected_value
 
     def __test_boolean_property(self, property_name):
         self.__test_property(property_name, "true", True)
@@ -141,5 +128,5 @@ class TestSettings(unittest.TestCase):
 
     def __test_property(self, property_name, value, expected_value):
         os.environ[property_name] = value
-        reload(self.__settings)
-        assert getattr(self.__settings, property_name) == expected_value
+        reload(self._settings)
+        assert getattr(self._settings, property_name) == expected_value

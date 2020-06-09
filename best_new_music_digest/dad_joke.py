@@ -6,11 +6,16 @@ Dad jokes.
 
 import requests
 
+from best_new_music_digest import settings
+
 
 def get_dad_joke():
     """
     Returns a dad joke.
     """
+
+    if not settings.DAD_JOKE:
+        return None
 
     try:
         return requests.get("https://icanhazdadjoke.com/",
