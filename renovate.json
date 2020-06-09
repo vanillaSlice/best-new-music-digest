@@ -1,5 +1,24 @@
 {
   "extends": [
-    "config:base"
-  ]
+    "config:base",
+    ":prHourlyLimitNone",
+    ":rebaseStalePrs"
+  ],
+  "packageRules": [
+    {
+      "updateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true
+    }
+  ],
+  "pip_requirements": {
+    "fileMatch": [
+      "requirements\\.txt",
+      "requirements-test\\.txt"
+    ]
+  }
 }
