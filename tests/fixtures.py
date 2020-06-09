@@ -49,6 +49,7 @@ class TestBase(unittest.TestCase):
         os.environ["SENDER_EMAIL"] = "some-sender-email"
         os.environ["SENDER_NAME"] = "some-sender-name"
         os.environ["SENDER_PASSWORD"] = "some-sender-password"
+        os.environ["SENDGRID_TEMPLATE_ID"] = "some-sendgrid-template-id"
         os.environ["SPUTNIKMUSIC_ALBUMS"] = "true"
         os.environ["THE_NEEDLE_DROP_ALBUMS"] = "true"
         os.environ["THE_NEEDLE_DROP_TRACKS"] = "true"

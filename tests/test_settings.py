@@ -58,6 +58,12 @@ class TestSettings(fixtures.TestBase):
     def test_sender_password_set(self):
         self.__test_string_property("SENDER_PASSWORD")
 
+    def test_sendgrid_template_id_not_set(self):
+        self.__test_missing_property("SENDGRID_TEMPLATE_ID", expect_exception=True)
+
+    def test_sendgrid_template_id_set(self):
+        self.__test_string_property("SENDGRID_TEMPLATE_ID")
+
     def test_sputnikmusic_albums_not_set(self):
         self.__test_missing_property("SPUTNIKMUSIC_ALBUMS", expected_value=True)
 
@@ -102,10 +108,12 @@ class TestSettings(fixtures.TestBase):
         del os.environ["RECIPIENT_EMAIL"]
         del os.environ["SENDER_EMAIL"]
         del os.environ["SENDER_PASSWORD"]
+        del os.environ["SENDGRID_TEMPLATE_ID"]
         with pytest.raises(Exception) as exception:
             reload(self._settings)
         assert str(exception.value) == "Missing mandatory properties: ['MONGODB_URI', " \
-                                       "'RECIPIENT_EMAIL', 'SENDER_EMAIL', 'SENDER_PASSWORD']."
+                                       "'RECIPIENT_EMAIL', 'SENDER_EMAIL', 'SENDER_PASSWORD', " \
+                                       "'SENDGRID_TEMPLATE_ID']."
 
     def __test_missing_property(self, property_name, expect_exception=False, expected_value=None):
         if property_name in os.environ:

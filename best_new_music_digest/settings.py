@@ -29,6 +29,7 @@ __check_properties_present([
     "RECIPIENT_EMAIL",
     "SENDER_EMAIL",
     "SENDER_PASSWORD",
+    "SENDGRID_TEMPLATE_ID",
 ])
 
 ALWAYS_EMAIL = __get_env_var_bool("ALWAYS_EMAIL", False)
@@ -40,6 +41,7 @@ RECIPIENT_EMAIL = __get_env_var("RECIPIENT_EMAIL")
 SENDER_EMAIL = __get_env_var("SENDER_EMAIL")
 SENDER_NAME = __get_env_var("SENDER_NAME", "Best New Music Digest")
 SENDER_PASSWORD = __get_env_var("SENDER_PASSWORD")
+SENDGRID_TEMPLATE_ID = __get_env_var("SENDGRID_TEMPLATE_ID")
 SPUTNIKMUSIC_ALBUMS = __get_env_var_bool("SPUTNIKMUSIC_ALBUMS")
 THE_NEEDLE_DROP_ALBUMS = __get_env_var_bool("THE_NEEDLE_DROP_ALBUMS")
 THE_NEEDLE_DROP_TRACKS = __get_env_var_bool("THE_NEEDLE_DROP_TRACKS")
