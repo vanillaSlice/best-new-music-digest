@@ -5,17 +5,10 @@
     ":rebaseStalePrs",
     "group:allNonMajor"
   ],
-  "packageRules": [
-    {
-      "updateTypes": [
-        "minor",
-        "patch",
-        "pin",
-        "digest"
-      ],
-      "automerge": true
-    }
-  ],
+  "automerge": true,
+  "major": {
+    "automerge": false
+  },
   "pip_requirements": {
     "fileMatch": [
       "requirements\\.txt",
