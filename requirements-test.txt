@@ -1,6 +1,6 @@
-coveralls==1.10.0
+coveralls==1.11.1
 mongomock==3.19.0
-pylint==2.5.2
-pytest==5.3.5
-pytest-cov==2.8.1
+pylint==2.5.3
+pytest==5.4.3
+pytest-cov==2.9.0
 requests-mock==1.8.0
