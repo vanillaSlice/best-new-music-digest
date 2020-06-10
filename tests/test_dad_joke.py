@@ -2,10 +2,10 @@
 
 import requests_mock
 
-from tests import fixtures
+from tests import helpers
 
 
-class TestDadJoke(fixtures.TestBase):
+class TestDadJoke(helpers.TestBase):
 
     def setUp(self):
         super().setUp()

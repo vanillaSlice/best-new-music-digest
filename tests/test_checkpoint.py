@@ -1,9 +1,9 @@
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring
 
-from tests import fixtures
+from tests import helpers
 
 
-class TestCheckpointer(fixtures.TestBase):
+class TestCheckpointer(helpers.TestBase):
 
     def test_get_checkpoint_new(self):
         assert self._checkpointer.get_checkpoint("checkpoint-1") == ""

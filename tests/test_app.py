@@ -4,10 +4,10 @@ from unittest.mock import patch
 
 import requests_mock
 
-from tests import fixtures
+from tests import helpers
 
 
-class TestApp(fixtures.TestBase):
+class TestApp(helpers.TestBase):
 
     def setUp(self):
         super().setUp()

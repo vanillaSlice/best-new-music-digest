@@ -5,10 +5,10 @@ from importlib import reload
 
 import pytest
 
-from tests import fixtures
+from tests import helpers
 
 
-class TestSettings(fixtures.TestBase):
+class TestSettings(helpers.TestBase):
 
     def test_always_email_not_set(self):
         self.__test_missing_property("ALWAYS_EMAIL", expected_value=False)

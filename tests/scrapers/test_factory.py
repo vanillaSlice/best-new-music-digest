@@ -1,9 +1,9 @@
 # pylint: disable=import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring
 
-from tests import fixtures
+from tests import helpers
 
 
-class TestFactory(fixtures.TestBase):
+class TestFactory(helpers.TestBase):
 
     def setUp(self):
         super().setUp()

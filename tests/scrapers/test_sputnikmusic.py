@@ -3,9 +3,9 @@
 import requests_mock
 
 from best_new_music_digest.scrapers import sputnikmusic
-from tests import fixtures
+from tests import helpers
 
-class TestAlbumScraper(fixtures.TestBase):
+class TestAlbumScraper(helpers.TestBase):
 
     def setUp(self):
         super().setUp()

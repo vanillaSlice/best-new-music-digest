@@ -2,10 +2,10 @@
 
 from unittest.mock import patch
 
-from tests import fixtures
+from tests import helpers
 
 
-class TestEmail(fixtures.TestBase):
+class TestEmail(helpers.TestBase):
 
     def setUp(self):
         super().setUp()

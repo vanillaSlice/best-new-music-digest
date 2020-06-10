@@ -3,10 +3,10 @@
 import requests_mock
 
 from best_new_music_digest.scrapers import pitchfork
-from tests import fixtures
+from tests import helpers
 
 
-class TestAlbumScraper(fixtures.TestBase):
+class TestAlbumScraper(helpers.TestBase):
 
     def setUp(self):
         super().setUp()
@@ -46,7 +46,7 @@ class TestAlbumScraper(fixtures.TestBase):
 
         assert items == self._load_json_test_data(output)
 
-class TestTrackScraper(fixtures.TestBase):
+class TestTrackScraper(helpers.TestBase):
 
     def setUp(self):
         super().setUp()

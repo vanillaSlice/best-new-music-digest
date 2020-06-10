@@ -1,7 +1,7 @@
 # pylint: disable=missing-class-docstring, missing-function-docstring, missing-module-docstring, too-few-public-methods
 
 from best_new_music_digest.scrapers.base import Scraper
-from tests import fixtures
+from tests import helpers
 
 
 class MockScraper(Scraper):
@@ -17,7 +17,7 @@ class MockErrorScraper(Scraper):
     def _get_items(self):
         raise Exception()
 
-class TestScraper(fixtures.TestBase):
+class TestScraper(helpers.TestBase):
 
     def test_scrape(self):
         assert MockScraper(self._checkpointer).scrape() == {
