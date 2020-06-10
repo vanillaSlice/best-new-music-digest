@@ -22,6 +22,26 @@ class TestSettings(helpers.TestBase):
     def test_dad_joke_set(self):
         self.__test_boolean_property("DAD_JOKE")
 
+    def test_day_of_week_to_run_not_set(self):
+        self.__test_missing_property("DAY_OF_WEEK_TO_RUN", expected_value="monday")
+
+    def test_day_of_week_to_run_set(self):
+        self.__test_property("DAY_OF_WEEK_TO_RUN", "MONDAY", "monday")
+        self.__test_property("DAY_OF_WEEK_TO_RUN", "Tuesday", "tuesday")
+        self.__test_property("DAY_OF_WEEK_TO_RUN", "wednesday", "wednesday")
+        self.__test_property("DAY_OF_WEEK_TO_RUN", "thursDAY", "thursday")
+        self.__test_property("DAY_OF_WEEK_TO_RUN", "fridaY", "friday")
+        self.__test_property("DAY_OF_WEEK_TO_RUN", "SATurDAY", "saturday")
+        self.__test_property("DAY_OF_WEEK_TO_RUN", "sUnDaY", "sunday")
+
+    def test_day_of_week_to_run_invalid(self):
+        self.__test_invalid_property(
+            "DAY_OF_WEEK_TO_RUN",
+            value="july",
+            expected_message="'DAY_OF_WEEK_TO_RUN' should be one of: ['monday', 'tuesday', " \
+                             "'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].",
+        )
+
     def test_mongodb_uri_not_set(self):
         self.__test_missing_property("MONGODB_URI", expect_exception=True)
 
@@ -138,3 +158,9 @@ class TestSettings(helpers.TestBase):
         os.environ[property_name] = value
         reload(self._settings)
         assert getattr(self._settings, property_name) == expected_value
+
+    def __test_invalid_property(self, property_name, value, expected_message):
+        os.environ[property_name] = value
+        with pytest.raises(Exception) as exception:
+            reload(self._settings)
+        assert str(exception.value) == expected_message

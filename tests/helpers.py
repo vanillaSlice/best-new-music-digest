@@ -42,6 +42,7 @@ class TestBase(unittest.TestCase):
     def __set_env_vars():
         os.environ["ALWAYS_EMAIL"] = "false"
         os.environ["DAD_JOKE"] = "true"
+        os.environ["DAY_OF_WEEK_TO_RUN"] = "wednesday"
         os.environ["MONGODB_URI"] = "some-mongodb-uri"
         os.environ["PITCHFORK_ALBUMS"] = "true"
         os.environ["PITCHFORK_TRACKS"] = "true"

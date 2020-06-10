@@ -2,11 +2,13 @@
 
 from unittest.mock import patch
 
+from freezegun import freeze_time
 import requests_mock
 
 from tests import helpers
 
 
+@freeze_time("2020-01-01")
 class TestApp(helpers.TestBase):
 
     def setUp(self):
@@ -55,3 +57,10 @@ class TestApp(helpers.TestBase):
         ]
 
         send_email.assert_called_with(digest, "some dad joke")
+
+    @freeze_time("2020-01-02")
+    @patch("best_new_music_digest.app.send_email")
+    @patch("best_new_music_digest.scrapers.factory.Checkpointer")
+    def test_run_not_on_selected_day(self, _, send_email):
+        self.__app.run()
+        send_email.assert_not_called()
