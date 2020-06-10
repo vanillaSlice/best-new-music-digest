@@ -28,7 +28,7 @@ def send_email(digest, dad_joke=None):
     message.template_id = settings.SENDGRID_TEMPLATE_ID
 
     message.dynamic_template_data = {
-        "subject": f"🎧 Best New Music - {datetime.now().strftime('%d/%m/%Y')} 🎧",
+        "date": datetime.utcnow().strftime("%d/%m/%Y"),
         "dad_joke": dad_joke,
         "digest": digest,
     }

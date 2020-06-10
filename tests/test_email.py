@@ -2,9 +2,12 @@
 
 from unittest.mock import patch
 
+from freezegun import freeze_time
+
 from tests import helpers
 
 
+@freeze_time("2020-01-01")
 class TestEmail(helpers.TestBase):
 
     def setUp(self):
@@ -15,7 +18,7 @@ class TestEmail(helpers.TestBase):
 
     @patch("best_new_music_digest.email.SendGridAPIClient.send")
     def test_send_email_no_digest_no_errors(self, send):
-        self.__email.send_email([
+        digest = [
             {
                 "items": [],
                 "errors": False,
@@ -24,15 +27,15 @@ class TestEmail(helpers.TestBase):
                 "items": [],
                 "errors": False,
             },
-        ])
+        ]
 
-        send.assert_not_called()
+        self.__test_send(send, digest, expect_called=False)
 
     @patch("best_new_music_digest.email.SendGridAPIClient.send")
     def test_send_email_no_digest_no_errors_always_send(self, send):
         self._settings.ALWAYS_EMAIL = True
 
-        self.__email.send_email([
+        digest = [
             {
                 "items": [],
                 "errors": False,
@@ -41,13 +44,13 @@ class TestEmail(helpers.TestBase):
                 "items": [],
                 "errors": False,
             },
-        ])
+        ]
 
-        send.assert_called()
+        self.__test_send(send, digest)
 
     @patch("best_new_music_digest.email.SendGridAPIClient.send")
     def test_send_email_no_digest_with_errors(self, send):
-        self.__email.send_email([
+        digest = [
             {
                 "items": [],
                 "errors": False,
@@ -56,15 +59,37 @@ class TestEmail(helpers.TestBase):
                 "items": [],
                 "errors": True,
             },
-        ])
+        ]
 
-        send.assert_called()
+        self.__test_send(send, digest)
 
     @patch("best_new_music_digest.email.SendGridAPIClient.send")
     def test_send_email_digest(self, send):
-        self.__email.send_email([
+        digest = [
             self._load_json_test_data("the_needle_drop_albums_output_with_checkpoint.json"),
             self._load_json_test_data("the_needle_drop_tracks_output_with_checkpoint.json"),
-        ])
+        ]
 
-        send.assert_called()
+        self.__test_send(send, digest)
+
+    def __test_send(self, send, digest, dad_joke="some-dad-joke", expect_called=True):
+        self.__email.send_email(digest, dad_joke)
+
+        if not expect_called:
+            send.assert_not_called()
+            return
+
+        message = send.call_args[0][0]
+
+        assert message.from_email.name == self._settings.SENDER_NAME
+        assert message.from_email.email == self._settings.SENDER_EMAIL
+        assert message.personalizations[0].tos[0]["name"] == self._settings.RECIPIENT_EMAIL
+        assert message.template_id.template_id == self._settings.SENDGRID_TEMPLATE_ID
+
+        expected_template_data = {
+            "date": "01/01/2020",
+            "dad_joke": dad_joke,
+            "digest": digest,
+        }
+
+        assert message.personalizations[0].dynamic_template_data == expected_template_data

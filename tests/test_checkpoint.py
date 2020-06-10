@@ -6,7 +6,7 @@ from tests import helpers
 class TestCheckpointer(helpers.TestBase):
 
     def test_get_checkpoint_new(self):
-        assert self._checkpointer.get_checkpoint("checkpoint-1") == ""
+        assert not self._checkpointer.get_checkpoint("checkpoint-1")
 
     def test_get_checkpoint_old(self):
         self._checkpointer.save_checkpoint("checkpoint-2", "some-link")

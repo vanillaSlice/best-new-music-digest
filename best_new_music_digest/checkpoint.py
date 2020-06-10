@@ -17,11 +17,11 @@ class Checkpointer:
 
     def get_checkpoint(self, name):
         """
-        Returns the checkpoint for a given name (empty if doesn't already exist).
+        Returns the checkpoint for a given name (None if it doesn't already exist).
         """
 
         checkpoint = self.__checkpoints.find_one({"name": name})
-        return checkpoint["link"] if checkpoint else ""
+        return checkpoint["link"] if checkpoint else None
 
     def save_checkpoint(self, name, link):
         """
