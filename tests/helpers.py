@@ -41,6 +41,7 @@ class TestBase(unittest.TestCase):
     @staticmethod
     def __set_env_vars():
         os.environ["ALWAYS_EMAIL"] = "false"
+        os.environ["CREATE_SPOTIFY_PLAYLISTS"] = "true"
         os.environ["DAD_JOKE"] = "true"
         os.environ["DAY_OF_WEEK_TO_RUN"] = "wednesday"
         os.environ["MONGODB_URI"] = "some-mongodb-uri"
@@ -51,6 +52,9 @@ class TestBase(unittest.TestCase):
         os.environ["SENDER_NAME"] = "some-sender-name"
         os.environ["SENDGRID_API_KEY"] = "some-api-key"
         os.environ["SENDGRID_TEMPLATE_ID"] = "some-sendgrid-template-id"
+        os.environ["SPOTIFY_CLIENT_ID"] = "some-spotify-client-id"
+        os.environ["SPOTIFY_CLIENT_SECRET"] = "some-spotify-client-secret"
+        os.environ["SPOTIFY_USERNAME"] = "some-spotify-username"
         os.environ["SPUTNIKMUSIC_ALBUMS"] = "true"
         os.environ["THE_NEEDLE_DROP_ALBUMS"] = "true"
         os.environ["THE_NEEDLE_DROP_TRACKS"] = "true"

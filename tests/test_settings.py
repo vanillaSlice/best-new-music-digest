@@ -16,6 +16,12 @@ class TestSettings(helpers.TestBase):
     def test_always_email_set(self):
         self.__test_boolean_property("ALWAYS_EMAIL")
 
+    def test_create_spotify_playlists_not_set(self):
+        self.__test_missing_property("CREATE_SPOTIFY_PLAYLISTS", expected_value=True)
+
+    def test_create_spotify_playlists_set(self):
+        self.__test_boolean_property("CREATE_SPOTIFY_PLAYLISTS")
+
     def test_dad_joke_not_set(self):
         self.__test_missing_property("DAD_JOKE", expected_value=True)
 
@@ -89,6 +95,39 @@ class TestSettings(helpers.TestBase):
 
     def test_sputnikmusic_albums_set(self):
         self.__test_boolean_property("SPUTNIKMUSIC_ALBUMS")
+
+    def test_spotify_client_id_not_set_when_required(self):
+        os.environ["CREATE_SPOTIFY_PLAYLISTS"] = "true"
+        self.__test_missing_property("SPOTIFY_CLIENT_ID", expect_exception=True)
+
+    def test_spotify_client_id_not_set_when_not_required(self):
+        os.environ["CREATE_SPOTIFY_PLAYLISTS"] = "false"
+        self.__test_missing_property("SPOTIFY_CLIENT_ID", expected_value="None")
+
+    def test_spotify_client_id_set(self):
+        self.__test_string_property("SPOTIFY_CLIENT_ID")
+
+    def test_spotify_client_secret_not_set_when_required(self):
+        os.environ["CREATE_SPOTIFY_PLAYLISTS"] = "true"
+        self.__test_missing_property("SPOTIFY_CLIENT_SECRET", expect_exception=True)
+
+    def test_spotify_client_secret_not_set_when_not_required(self):
+        os.environ["CREATE_SPOTIFY_PLAYLISTS"] = "false"
+        self.__test_missing_property("SPOTIFY_CLIENT_SECRET", expected_value="None")
+
+    def test_spotify_client_secret_set(self):
+        self.__test_string_property("SPOTIFY_CLIENT_SECRET")
+
+    def test_spotify_username_not_set_when_required(self):
+        os.environ["CREATE_SPOTIFY_PLAYLISTS"] = "true"
+        self.__test_missing_property("SPOTIFY_USERNAME", expect_exception=True)
+
+    def test_spotify_username_not_set_when_not_required(self):
+        os.environ["CREATE_SPOTIFY_PLAYLISTS"] = "false"
+        self.__test_missing_property("SPOTIFY_USERNAME", expected_value="None")
+
+    def test_spotify_username_set(self):
+        self.__test_string_property("SPOTIFY_USERNAME")
 
     def test_the_needle_drop_albums_not_set(self):
         self.__test_missing_property("THE_NEEDLE_DROP_ALBUMS", expected_value=True)

@@ -39,6 +39,7 @@ __check_properties_present([
 ])
 
 ALWAYS_EMAIL = __get_env_var_bool("ALWAYS_EMAIL", False)
+CREATE_SPOTIFY_PLAYLISTS = __get_env_var_bool("CREATE_SPOTIFY_PLAYLISTS")
 DAD_JOKE = __get_env_var_bool("DAD_JOKE")
 DAY_OF_WEEK_TO_RUN = __get_env_var_choice(
     "DAY_OF_WEEK_TO_RUN",
@@ -60,6 +61,17 @@ SENDER_EMAIL = __get_env_var("SENDER_EMAIL")
 SENDER_NAME = __get_env_var("SENDER_NAME", "Best New Music Digest")
 SENDGRID_API_KEY = __get_env_var("SENDGRID_API_KEY")
 SENDGRID_TEMPLATE_ID = __get_env_var("SENDGRID_TEMPLATE_ID")
+
+if CREATE_SPOTIFY_PLAYLISTS:
+    __check_properties_present([
+        "SPOTIFY_CLIENT_ID",
+        "SPOTIFY_CLIENT_SECRET",
+        "SPOTIFY_USERNAME",
+    ])
+
+SPOTIFY_CLIENT_ID = __get_env_var("SPOTIFY_CLIENT_ID")
+SPOTIFY_CLIENT_SECRET = __get_env_var("SPOTIFY_CLIENT_SECRET")
+SPOTIFY_USERNAME = __get_env_var("SPOTIFY_USERNAME")
 SPUTNIKMUSIC_ALBUMS = __get_env_var_bool("SPUTNIKMUSIC_ALBUMS")
 THE_NEEDLE_DROP_ALBUMS = __get_env_var_bool("THE_NEEDLE_DROP_ALBUMS")
 THE_NEEDLE_DROP_TRACKS = __get_env_var_bool("THE_NEEDLE_DROP_TRACKS")
