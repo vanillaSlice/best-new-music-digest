@@ -1,4 +1,4 @@
-# pylint: disable=import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring
+# pylint: disable=import-outside-toplevel, missing-class-docstring, missing-function-docstring, missing-module-docstring, too-many-arguments
 
 from unittest.mock import patch
 
@@ -72,8 +72,14 @@ class TestEmail(helpers.TestBase):
 
         self.__test_send(send, digest)
 
-    def __test_send(self, send, digest, dad_joke="some-dad-joke", expect_called=True):
-        self.__email.send_email(digest, dad_joke)
+    def __test_send(self,
+                    send,
+                    digest,
+                    dad_joke="some-dad-joke",
+                    albums_playlist_url="some-albums-playlist-url",
+                    tracks_playlist_url="some-tracks-playlist-url",
+                    expect_called=True):
+        self.__email.send_email(digest, dad_joke, albums_playlist_url, tracks_playlist_url)
 
         if not expect_called:
             send.assert_not_called()
@@ -90,6 +96,8 @@ class TestEmail(helpers.TestBase):
             "date": "01/01/2020",
             "dad_joke": dad_joke,
             "digest": digest,
+            "albums_playlist_url": albums_playlist_url,
+            "tracks_playlist_url": tracks_playlist_url,
         }
 
         assert message.personalizations[0].dynamic_template_data == expected_template_data

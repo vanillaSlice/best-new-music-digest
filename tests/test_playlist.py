@@ -17,42 +17,49 @@ class TestPlaylist(helpers.TestBase):
         self.__playlist = playlist
 
         self.__user_id = "some-user-id"
-        self.__playlist_id = "some-playlist_id"
+        self.__playlist_id = "some-playlist-id"
+        self.__playlist_url = "some-playlist-url"
 
     @patch("best_new_music_digest.playlist.SpotifyOAuth")
     @patch("best_new_music_digest.playlist.spotipy.Spotify")
-    def test_create_playlist_disabled(self, spotify, _):
+    def test_create_playlists_disabled(self, spotify, _):
         spotify = spotify()
 
         self._settings.CREATE_SPOTIFY_PLAYLISTS = False
 
-        self.__playlist.create_playlist([
+        response = self.__playlist.create_playlists([
             self._load_json_test_data("the_needle_drop_albums_output_with_checkpoint.json"),
         ])
 
+        assert response == (None, None)
+
         spotify.user_playlist_create.assert_not_called()
 
     @patch("best_new_music_digest.playlist.SpotifyOAuth")
     @patch("best_new_music_digest.playlist.spotipy.Spotify")
-    def test_create_playlist_no_digest_items(self, spotify, _):
+    def test_create_playlists_no_digest_items(self, spotify, _):
         spotify = spotify()
 
-        self.__playlist.create_playlist([])
+        response = self.__playlist.create_playlists([])
+
+        assert response == (None, None)
 
         spotify.user_playlist_create.assert_not_called()
 
     @patch("best_new_music_digest.playlist.SpotifyOAuth")
     @patch("best_new_music_digest.playlist.spotipy.Spotify")
-    def test_create_playlist_with_albums(self, spotify, _):
+    def test_create_playlists_with_albums(self, spotify, _):
         spotify = spotify()
 
         self.__with_spotify_responses(spotify)
 
-        self.__playlist.create_playlist([
+        response = self.__playlist.create_playlists([
             self._load_json_test_data("pitchfork_albums_output_without_checkpoint.json"),
             self._load_json_test_data("sputnikmusic_albums_output_without_checkpoint.json"),
             self._load_json_test_data("the_needle_drop_albums_output_without_checkpoint.json"),
         ])
+
+        assert response == (self.__playlist_url, None)
 
         spotify.user_playlist_create.assert_called_with(
             self.__user_id,
@@ -95,15 +102,17 @@ class TestPlaylist(helpers.TestBase):
 
     @patch("best_new_music_digest.playlist.SpotifyOAuth")
     @patch("best_new_music_digest.playlist.spotipy.Spotify")
-    def test_create_playlist_with_tracks(self, spotify, _):
+    def test_create_playlists_with_tracks(self, spotify, _):
         spotify = spotify()
 
         self.__with_spotify_responses(spotify)
 
-        self.__playlist.create_playlist([
+        response = self.__playlist.create_playlists([
             self._load_json_test_data("pitchfork_tracks_output_without_checkpoint.json"),
             self._load_json_test_data("the_needle_drop_tracks_output_without_checkpoint.json"),
         ])
+
+        assert response == (None, self.__playlist_url)
 
         spotify.user_playlist_create.assert_called_with(
             self.__user_id,
@@ -127,7 +136,12 @@ class TestPlaylist(helpers.TestBase):
             return {"id": self.__user_id}
 
         def get_user_playlist_create_response(*_, **_kwargs):
-            return {"id": self.__playlist_id}
+            return {
+                "id": self.__playlist_id,
+                "external_urls": {
+                    "spotify": self.__playlist_url,
+                },
+            }
 
         def get_search_response(q, type, **_):
             if type == "album":

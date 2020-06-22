@@ -17,11 +17,13 @@ class TestApp(helpers.TestBase):
         from best_new_music_digest import app
         self.__app = app
 
-    @patch("best_new_music_digest.app.create_playlist")
     @patch("best_new_music_digest.app.send_email")
+    @patch("best_new_music_digest.app.create_playlists")
     @patch("best_new_music_digest.scrapers.factory.Checkpointer")
-    def test_run(self, checkpointer, send_email, create_playlist):
+    def test_run(self, checkpointer, create_playlists, send_email):
         checkpointer.return_value = self._checkpointer
+
+        create_playlists.return_value = "some-albums-playlist-url", "some-tracks-playlist-url"
 
         with requests_mock.Mocker() as req_mock:
             req_mock.get("https://www.pitchfork.com/reviews/best/albums/",
@@ -57,15 +59,20 @@ class TestApp(helpers.TestBase):
             self._load_json_test_data("the_needle_drop_tracks_output_without_checkpoint.json"),
         ]
 
-        send_email.assert_called_with(digest, "some dad joke")
+        create_playlists.assert_called_with(digest)
 
-        create_playlist.assert_called_with(digest)
+        send_email.assert_called_with(
+            digest,
+            "some dad joke",
+            "some-albums-playlist-url",
+            "some-tracks-playlist-url",
+        )
 
     @freeze_time("2020-01-02")
-    @patch("best_new_music_digest.app.create_playlist")
     @patch("best_new_music_digest.app.send_email")
+    @patch("best_new_music_digest.app.create_playlists")
     @patch("best_new_music_digest.scrapers.factory.Checkpointer")
-    def test_run_not_on_selected_day(self, _, send_email, create_playlist):
+    def test_run_not_on_selected_day(self, _, create_playlists, send_email):
         self.__app.run()
+        create_playlists.assert_not_called()
         send_email.assert_not_called()
-        create_playlist.assert_not_called()

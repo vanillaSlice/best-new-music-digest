@@ -10,7 +10,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from best_new_music_digest import settings
 
 
-def create_playlist(digest):
+def create_playlists(digest):
     """
     Creates a Spotify playlist.
     """
@@ -18,7 +18,7 @@ def create_playlist(digest):
     should_create = settings.CREATE_SPOTIFY_PLAYLISTS and any(d["items"] for d in digest)
 
     if not should_create:
-        return
+        return None, None
 
     auth_manager = SpotifyOAuth(scope="playlist-modify-private",
                                 client_id=settings.SPOTIFY_CLIENT_ID,
@@ -37,8 +37,10 @@ def create_playlist(digest):
         elif digest_item["type"] == "tracks":
             track_ids.extend(__get_track_ids(digest_item, spotify))
 
-    __add_tracks_to_playlist(album_track_ids, spotify, user_id, "albums")
-    __add_tracks_to_playlist(track_ids, spotify, user_id, "tracks")
+    albums_playlist_url = __add_tracks_to_playlist(album_track_ids, spotify, user_id, "albums")
+    tracks_playlist_url = __add_tracks_to_playlist(track_ids, spotify, user_id, "tracks")
+
+    return albums_playlist_url, tracks_playlist_url
 
 
 def __get_album_track_ids(digest_item, spotify):
@@ -86,12 +88,13 @@ def __get_track_ids(digest_item, spotify):
 
 def __add_tracks_to_playlist(track_ids, spotify, user_id, playlist_type):
     if not track_ids:
-        return
+        return None
 
     date = datetime.utcnow().strftime("%d/%m/%Y")
     playlist_name = f"Best New Music Digest ({playlist_type.capitalize()}) - {date}"
     playlist_response = spotify.user_playlist_create(user_id, playlist_name, public=False)
     playlist_id = playlist_response["id"]
+    playlist_url = playlist_response["external_urls"]["spotify"]
 
     deduplicate_track_ids = []
     for track in track_ids:
@@ -104,3 +107,5 @@ def __add_tracks_to_playlist(track_ids, spotify, user_id, playlist_type):
 
     for track_ids_chunk in chunked_track_ids:
         spotify.user_playlist_add_tracks(user_id, playlist_id, track_ids_chunk)
+
+    return playlist_url
