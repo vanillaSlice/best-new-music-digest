@@ -28,6 +28,7 @@ class Scraper:
 
         try:
             items = self._get_items()
+            self.__sanitise_items(items)
         except Exception as exception:
             logging.error(exception)
             items = []
@@ -40,6 +41,16 @@ class Scraper:
             "errors": errors,
             "type": self.__type,
         }
+
+    @staticmethod
+    def __sanitise_items(items):
+        def remove_extra_whitespace(string):
+            return " ".join(string.split())
+
+        for item in items:
+            item["artist"] = remove_extra_whitespace(item["artist"])
+            item["title"] = remove_extra_whitespace(item["title"])
+            item["link"] = remove_extra_whitespace(item["link"])
 
     def _get_items(self):
         return []
