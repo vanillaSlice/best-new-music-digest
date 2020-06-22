@@ -1,4 +1,4 @@
-# pylint: disable=import-outside-toplevel, invalid-name, missing-class-docstring, missing-function-docstring, missing-module-docstring, redefined-builtin
+# pylint: disable=import-outside-toplevel, invalid-name, missing-class-docstring, missing-function-docstring, missing-module-docstring, redefined-builtin, too-many-return-statements
 
 from unittest.mock import patch
 
@@ -92,6 +92,16 @@ class TestPlaylist(helpers.TestBase):
             "5BBWr1LUsCH1tECJLAUGnP",
             "4baGw8dAfqNl7RrmlMtzb5",
             "6VU4Ys4rbbbwJ84g1ZuYA5",
+            "1p1b9LdLJ0REuFJX9mYtFX",
+            "5V9lnDn1hePoudMfKfCTNl",
+            "15NQ3x1f2GUhqs8oBXhTqp",
+            "6kK3m2FiYERYrUF269y0Es",
+            "2pFC6DEdMhxQWUTptwVyS4",
+            "5OkYfk72CNL8XLqa3gp9q7",
+            "4mL25h2hl6gdyu9tNTudnI",
+            "3RyLrayd9un9ClTah57JI0",
+            "1DA6UYm3jqf8b3ecWUbo6i",
+            "07zYusRvYr8nAZOBDguzWv",
         ]
 
         spotify.user_playlist_add_tracks.assert_called_with(
@@ -122,6 +132,7 @@ class TestPlaylist(helpers.TestBase):
 
         track_ids = [
             "7loXmEHvxWvdvwKzLFAMmc",
+            "3RyLrayd9un9ClTah57JI0",
             "7vxuYx5faAjfHqAEq2xZGs",
         ]
 
@@ -152,6 +163,9 @@ class TestPlaylist(helpers.TestBase):
                 if q == "artist:Fiona Apple album:Fetch The Bolt Cutters":
                     return self._load_json_test_data("spotify_albums_fiona_apple_response.json")
 
+                if q == "artist:Freddie Gibbs":
+                    return self._load_json_test_data("spotify_albums_freddie_gibbs_response.json")
+
                 return self._load_json_test_data("spotify_albums_empty_response.json")
 
             if q == "artist:Blake Mills track:Vanishing Twin":
@@ -159,6 +173,9 @@ class TestPlaylist(helpers.TestBase):
 
             if q == "artist:slowthai track:Magic":
                 return self._load_json_test_data("spotify_track_slowthai_response.json")
+
+            if q == "artist:Freddie Gibbs":
+                return self._load_json_test_data("spotify_track_freddie_gibbs_response.json")
 
             return self._load_json_test_data("spotify_track_empty_response.json")
 
@@ -168,6 +185,9 @@ class TestPlaylist(helpers.TestBase):
 
             if album_id == "0fO1KemWL2uCCQmM22iKlj":
                 return self._load_json_test_data("spotify_tracks_fiona_apple_response.json")
+
+            if album_id == "3znl1qe13kyjQv7KcR685N":
+                return self._load_json_test_data("spotify_tracks_freddie_gibbs_response.json")
 
             return self._load_json_test_data("spotify_track_empty_response.json")
 

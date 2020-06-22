@@ -3,6 +3,7 @@ Playlist helpers.
 """
 
 from datetime import datetime
+from difflib import SequenceMatcher
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -50,14 +51,27 @@ def __get_album_track_ids(digest_item, spotify):
         artist = item["artist"]
         title = item["title"]
 
-        album_result = spotify.search(q=f"artist:{artist} album:{title}", type="album", limit=1)
+        # Try to find album using the artist and album title
+        album_id = __get_album_id(artist, title, f"artist:{artist} album:{title}", spotify)
 
-        album_items = album_result["albums"]["items"]
+        # Try to find album using the artist
+        if not album_id:
+            album_id = __get_album_id(artist, title, f"artist:{artist}", spotify)
 
-        if not album_items:
+        # Try to find album using the album title
+        if not album_id:
+            album_id = __get_album_id(artist, title, f"album:{title}", spotify)
+
+        # Try splitting the artist into multiple artists
+        if not album_id:
+            for artist in artist.split(" & "):
+                album_id = __get_album_id(artist, title, f"artist:{artist}", spotify)
+                if album_id:
+                    break
+
+        # Give up
+        if not album_id:
             continue
-
-        album_id = album_items[0]["id"]
 
         tracks_result = spotify.album_tracks(album_id)
 
@@ -67,23 +81,70 @@ def __get_album_track_ids(digest_item, spotify):
     return album_track_ids
 
 
+def __get_album_id(artist, title, query, spotify):
+    album_result = spotify.search(q=query, type="album")
+
+    album_items = album_result["albums"]["items"]
+
+    for album_item in album_items:
+        artist_match = any(__similar_enough(artist, a["name"]) for a in album_item["artists"])
+        title_match = __similar_enough(title, album_item["name"])
+        if artist_match and title_match:
+            return album_item["id"]
+
+    return None
+
+
+def __similar_enough(str1, str2):
+    return SequenceMatcher(None, str1.lower(), str2.lower()).ratio() >= 0.25
+
+
 def __get_track_ids(digest_item, spotify):
     track_ids = []
 
     for item in digest_item["items"]:
         artist = item["artist"]
-        title = item["title"].split(" ft. ")[0]
+        title = item["title"]
 
-        tracks_result = spotify.search(q=f"artist:{artist} track:{title}", type="track", limit=1)
+        # Try to find track using the artist and track title
+        track_id = __get_track_id(artist, title, f"artist:{artist} track:{title}", spotify)
 
-        tracks_items = tracks_result["tracks"]["items"]
+        # Try to find track using the artist
+        if not track_id:
+            track_id = __get_track_id(artist, title, f"artist:{artist}", spotify)
 
-        if not tracks_items:
+        # Try to find track using the track title
+        if not track_id:
+            track_id = __get_track_id(artist, title, f"track:{title}", spotify)
+
+       # Try splitting the artist into multiple artists
+        if not track_id:
+            for artist in artist.split(" & "):
+                track_id = __get_track_id(artist, title, f"artist:{artist}", spotify)
+                if track_id:
+                    break
+
+        # Give up
+        if not track_id:
             continue
 
-        track_ids.append(tracks_items[0]["id"])
+        track_ids.append(track_id)
 
     return track_ids
+
+
+def __get_track_id(artist, title, query, spotify):
+    tracks_result = spotify.search(q=query, type="track")
+
+    tracks_items = tracks_result["tracks"]["items"]
+
+    for track_item in tracks_items:
+        artist_match = any(__similar_enough(artist, a["name"]) for a in track_item["artists"])
+        title_match = __similar_enough(title, track_item["name"])
+        if artist_match and title_match:
+            return track_item["id"]
+
+    return None
 
 
 def __add_tracks_to_playlist(track_ids, spotify, user_id, playlist_type):

@@ -76,7 +76,7 @@ class TrackScraper(Scraper):
 
         item = {
             "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
-            "title": details.find("h2").contents[0].replace("“", " ", 1).replace("”", " ", 1),
+            "title": self.__normalise_title(details.find("h2").contents[0]),
             "link": link,
         }
 
@@ -90,8 +90,12 @@ class TrackScraper(Scraper):
 
             items.append({
                 "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
-                "title": details.find("h2").contents[0].replace("“", " ", 1).replace("”", " ", 1),
+                "title": self.__normalise_title(details.find("h2").contents[0]),
                 "link": link,
             })
 
         return items
+
+    @staticmethod
+    def __normalise_title(title):
+        return title.replace("“", " ", 1).replace("”", " ", 1).replace("’", "'")
