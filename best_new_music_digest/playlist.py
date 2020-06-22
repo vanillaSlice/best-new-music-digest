@@ -25,7 +25,7 @@ def create_playlists(digest):
                                 client_id=settings.SPOTIFY_CLIENT_ID,
                                 client_secret=settings.SPOTIFY_CLIENT_SECRET,
                                 username=settings.SPOTIFY_USERNAME,
-                                redirect_uri="http://localhost:8888/callback")
+                                redirect_uri="http://localhost/")
     spotify = spotipy.Spotify(auth_manager=auth_manager)
     user_id = spotify.me()["id"]
 
