@@ -58,5 +58,6 @@
       "link": "https://www.youtube.com/watch?v=FriRf3olBpo"
     }
   ],
-  "errors": false
+  "errors": false,
+  "type": "tracks"
 }

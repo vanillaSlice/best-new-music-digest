@@ -12,10 +12,11 @@ class Scraper:
     Base scraper.
     """
 
-    def __init__(self, checkpointer, title, link):
+    def __init__(self, checkpointer, title, link, scraper_type):
         self.__checkpointer = checkpointer
         self.__title = title
         self.__link = link
+        self.__type = scraper_type
         self.__saved_checkpoint = False
 
     def scrape(self):
@@ -37,6 +38,7 @@ class Scraper:
             "link": self.__link,
             "items": items,
             "errors": errors,
+            "type": self.__type,
         }
 
     def _get_items(self):

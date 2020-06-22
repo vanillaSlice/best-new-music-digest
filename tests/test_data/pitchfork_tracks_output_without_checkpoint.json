@@ -63,5 +63,6 @@
       "link": "https://www.pitchfork.com/reviews/tracks/lil-uzi-vert-pop/"
     }
   ],
-  "errors": false
+  "errors": false,
+  "type": "tracks"
 }

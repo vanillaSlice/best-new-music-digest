@@ -17,9 +17,10 @@ class TestApp(helpers.TestBase):
         from best_new_music_digest import app
         self.__app = app
 
+    @patch("best_new_music_digest.app.create_playlist")
     @patch("best_new_music_digest.app.send_email")
     @patch("best_new_music_digest.scrapers.factory.Checkpointer")
-    def test_run(self, checkpointer, send_email):
+    def test_run(self, checkpointer, send_email, create_playlist):
         checkpointer.return_value = self._checkpointer
 
         with requests_mock.Mocker() as req_mock:
@@ -58,9 +59,13 @@ class TestApp(helpers.TestBase):
 
         send_email.assert_called_with(digest, "some dad joke")
 
+        create_playlist.assert_called_with(digest)
+
     @freeze_time("2020-01-02")
+    @patch("best_new_music_digest.app.create_playlist")
     @patch("best_new_music_digest.app.send_email")
     @patch("best_new_music_digest.scrapers.factory.Checkpointer")
-    def test_run_not_on_selected_day(self, _, send_email):
+    def test_run_not_on_selected_day(self, _, send_email, create_playlist):
         self.__app.run()
         send_email.assert_not_called()
+        create_playlist.assert_not_called()

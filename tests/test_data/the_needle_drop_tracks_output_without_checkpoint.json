@@ -323,5 +323,6 @@
       "link": "https://www.youtube.com/watch?v=zQ75BuzThGU"
     }
   ],
-  "errors": false
+  "errors": false,
+  "type": "tracks"
 }

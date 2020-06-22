@@ -5,7 +5,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/github/vanillaSlice/best-new-music-digest/master.svg)](https://coveralls.io/github/vanillaSlice/best-new-music-digest?branch=master)
 [![License](https://img.shields.io/github/license/vanillaSlice/best-new-music-digest.svg)](LICENSE)
 
-Scrapes new music info and emails out a digest.
+Scrapes new music info, emails out a digest, and creates a playlist.
 
 ## Configuration
 

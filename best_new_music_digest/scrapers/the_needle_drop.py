@@ -22,7 +22,8 @@ class AlbumScraper(Scraper):
     def __init__(self, checkpointer):
         super().__init__(checkpointer,
                          "The Needle Drop Albums",
-                         f"{self.__BASE_URL}/user/theneedledrop")
+                         f"{self.__BASE_URL}/user/theneedledrop",
+                         "albums")
 
     def _get_items(self):
         items = []
@@ -64,7 +65,8 @@ class TrackScraper(Scraper):
     def __init__(self, checkpointer):
         super().__init__(checkpointer,
                          "The Needle Drop Tracks",
-                         f"{self.__BASE_URL}/user/theneedledrop")
+                         f"{self.__BASE_URL}/user/theneedledrop",
+                         "tracks")
         self._pattern = re.compile(r"!!!BEST TRACKS THIS WEEK!!!(.*?)\.\.\.meh\.\.\.", re.DOTALL)
 
     def _get_items(self):

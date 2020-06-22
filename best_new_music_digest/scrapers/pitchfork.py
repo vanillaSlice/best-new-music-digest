@@ -19,7 +19,7 @@ class AlbumScraper(Scraper):
     __SCRAPE_URL = f"{__BASE_URL}/reviews/best/albums/"
 
     def __init__(self, checkpointer):
-        super().__init__(checkpointer, "Pitchfork Albums", self.__SCRAPE_URL)
+        super().__init__(checkpointer, "Pitchfork Albums", self.__SCRAPE_URL, "albums")
 
     def _get_items(self):
         items = []
@@ -56,7 +56,7 @@ class TrackScraper(Scraper):
     __SCRAPE_URL = f"{__BASE_URL}/reviews/best/tracks/"
 
     def __init__(self, checkpointer):
-        super().__init__(checkpointer, "Pitchfork Tracks", self.__SCRAPE_URL)
+        super().__init__(checkpointer, "Pitchfork Tracks", self.__SCRAPE_URL, "tracks")
 
     def _get_items(self):
         items = []

@@ -2,5 +2,6 @@
   "title": "Pitchfork Albums",
   "link": "https://www.pitchfork.com/reviews/best/albums/",
   "items": [],
-  "errors": false
+  "errors": false,
+  "type": "albums"
 }

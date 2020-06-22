@@ -3,5 +3,6 @@
   "link": "https://www.pitchfork.com/reviews/best/tracks/",
   "items": [
   ],
-  "errors": false
+  "errors": false,
+  "type": "tracks"
 }
