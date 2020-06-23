@@ -163,7 +163,7 @@ class TestPlaylist(helpers.TestBase):
                 if q == "artist:Fiona Apple album:Fetch The Bolt Cutters":
                     return self._load_json_test_data("spotify_albums_fiona_apple_response.json")
 
-                if q == "artist:Freddie Gibbs":
+                if q == "artist:Freddie Gibbs tag:new":
                     return self._load_json_test_data("spotify_albums_freddie_gibbs_response.json")
 
                 return self._load_json_test_data("spotify_albums_empty_response.json")
@@ -174,7 +174,7 @@ class TestPlaylist(helpers.TestBase):
             if q == "artist:slowthai track:Magic":
                 return self._load_json_test_data("spotify_track_slowthai_response.json")
 
-            if q == "artist:Freddie Gibbs":
+            if q == "artist:Freddie Gibbs tag:new":
                 return self._load_json_test_data("spotify_track_freddie_gibbs_response.json")
 
             return self._load_json_test_data("spotify_track_empty_response.json")
