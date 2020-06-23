@@ -39,6 +39,10 @@ class TestBase(unittest.TestCase):
         return json.loads(TestBase._load_test_data(file_name))
 
     @staticmethod
+    def _raise_exception():
+        raise Exception()
+
+    @staticmethod
     def __set_env_vars():
         os.environ["ALWAYS_EMAIL"] = "false"
         os.environ["CREATE_SPOTIFY_PLAYLISTS"] = "true"

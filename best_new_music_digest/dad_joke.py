@@ -1,4 +1,4 @@
-# pylint: disable=bare-except
+# pylint: disable=broad-except
 
 """
 Dad jokes.
@@ -15,10 +15,13 @@ def get_dad_joke():
     """
 
     if not settings.DAD_JOKE:
+        print("Dad jokes are disabled")
         return None
 
     try:
         return requests.get("https://icanhazdadjoke.com/",
                             headers={"Accept": "application/json"}).json()["joke"]
-    except:
+    except Exception as exception:
+        print("Failed to get dad joke")
+        print(exception)
         return "It would seem that I've run out of dad jokes. I hope you're happy now 😞."

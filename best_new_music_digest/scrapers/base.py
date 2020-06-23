@@ -4,8 +4,6 @@
 Base scrapers.
 """
 
-import logging
-
 
 class Scraper:
     """
@@ -24,15 +22,20 @@ class Scraper:
         Scrapes music information.
         """
 
+        print(f"Running {self.__title} scraper")
+
         errors = False
 
         try:
             items = self._get_items()
             self.__sanitise_items(items)
         except Exception as exception:
-            logging.error(exception)
+            print("Failed to run successfully")
+            print(exception)
             items = []
             errors = True
+
+        print(f"Found {len(items)} new {self.__type}")
 
         return {
             "title": self.__title,

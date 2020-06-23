@@ -142,6 +142,20 @@ class TestPlaylist(helpers.TestBase):
             track_ids,
         )
 
+    @patch("best_new_music_digest.playlist.SpotifyOAuth")
+    @patch("best_new_music_digest.playlist.spotipy.Spotify")
+    def test_create_playlists_error(self, spotify, _):
+        spotify = spotify()
+
+        spotify.me.side_effect = self._raise_exception
+
+        response = self.__playlist.create_playlists([
+            self._load_json_test_data("pitchfork_tracks_output_without_checkpoint.json"),
+            self._load_json_test_data("the_needle_drop_tracks_output_without_checkpoint.json"),
+        ])
+
+        assert response == (None, None)
+
     def __with_spotify_responses(self, spotify):
         def get_me_response():
             return {"id": self.__user_id}

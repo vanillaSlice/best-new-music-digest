@@ -16,7 +16,12 @@ def run():
     Run the app.
     """
 
-    if datetime.utcnow().strftime("%A").lower() != settings.DAY_OF_WEEK_TO_RUN:
+    today = datetime.utcnow().strftime("%A").lower()
+
+    if today != settings.DAY_OF_WEEK_TO_RUN:
+        print(f"Job is configured to run on {settings.DAY_OF_WEEK_TO_RUN.capitalize()} " \
+              f"but today is {today.capitalize()}")
+        print("Shutting down")
         return
 
     scrapers = factory.get_scrapers()

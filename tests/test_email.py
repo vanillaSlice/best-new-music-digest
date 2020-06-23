@@ -72,6 +72,17 @@ class TestEmail(helpers.TestBase):
 
         self.__test_send(send, digest)
 
+    @patch("best_new_music_digest.email.SendGridAPIClient.send")
+    def test_send_email_error(self, send):
+        send.side_effect = self._raise_exception
+
+        digest = [
+            self._load_json_test_data("the_needle_drop_albums_output_with_checkpoint.json"),
+            self._load_json_test_data("the_needle_drop_tracks_output_with_checkpoint.json"),
+        ]
+
+        self.__email.send_email(digest)
+
     def __test_send(self,
                     send,
                     digest,

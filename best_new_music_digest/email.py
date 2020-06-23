@@ -1,3 +1,5 @@
+# pylint: disable=broad-except
+
 """
 Emails.
 """
@@ -15,9 +17,13 @@ def send_email(digest, dad_joke=None, albums_playlist_url=None, tracks_playlist_
     Sends out digest email.
     """
 
+    if settings.ALWAYS_EMAIL:
+        print("Always email is enabled")
+
     should_send = any(d["items"] or d["errors"] for d in digest) or settings.ALWAYS_EMAIL
 
     if not should_send:
+        print("No items or errors to email about")
         return
 
     message = Mail(
@@ -35,4 +41,8 @@ def send_email(digest, dad_joke=None, albums_playlist_url=None, tracks_playlist_
         "tracks_playlist_url": tracks_playlist_url,
     }
 
-    SendGridAPIClient(settings.SENDGRID_API_KEY).send(message)
+    try:
+        SendGridAPIClient(settings.SENDGRID_API_KEY).send(message)
+    except Exception as exception:
+        print("Failed to send email")
+        print(exception)
