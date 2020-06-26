@@ -1,8 +1,7 @@
 name: Scheduled Run
 on:
   schedule:
-    - cron:  '*/15 * * * *'
-
+    - cron:  '*/5 * * * *'
 jobs:
   run:
     runs-on: ubuntu-latest
