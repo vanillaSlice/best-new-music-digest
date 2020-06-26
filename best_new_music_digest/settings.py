@@ -24,12 +24,6 @@ def __get_env_var(prop, default=None):
 def __get_env_var_bool(prop, default=True):
     return __get_env_var(prop, default).lower() == "true"
 
-def __get_env_var_choice(prop, choices, default):
-    choice = __get_env_var(prop, default).lower()
-    if choice not in choices:
-        raise Exception(f"'{prop}' should be one of: {choices}.")
-    return choice
-
 __check_properties_present([
     "MONGODB_URI",
     "RECIPIENT_EMAIL",
@@ -41,18 +35,6 @@ __check_properties_present([
 ALWAYS_EMAIL = __get_env_var_bool("ALWAYS_EMAIL", False)
 CREATE_SPOTIFY_PLAYLISTS = __get_env_var_bool("CREATE_SPOTIFY_PLAYLISTS")
 DAD_JOKE = __get_env_var_bool("DAD_JOKE")
-DAY_OF_WEEK_TO_RUN = __get_env_var_choice(
-    "DAY_OF_WEEK_TO_RUN",
-    choices=[
-        "monday",
-        "tuesday",
-        "wednesday",
-        "thursday",
-        "friday",
-        "saturday",
-        "sunday"
-    ],
-    default="monday").lower()
 MONGODB_URI = __get_env_var("MONGODB_URI")
 PITCHFORK_ALBUMS = __get_env_var_bool("PITCHFORK_ALBUMS")
 PITCHFORK_TRACKS = __get_env_var_bool("PITCHFORK_TRACKS")

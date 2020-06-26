@@ -2,13 +2,11 @@
 
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import requests_mock
 
 from tests import helpers
 
 
-@freeze_time("2020-01-01")
 class TestApp(helpers.TestBase):
 
     def setUp(self):
@@ -67,12 +65,3 @@ class TestApp(helpers.TestBase):
             "some-albums-playlist-url",
             "some-tracks-playlist-url",
         )
-
-    @freeze_time("2020-01-02")
-    @patch("best_new_music_digest.app.send_email")
-    @patch("best_new_music_digest.app.create_playlists")
-    @patch("best_new_music_digest.scrapers.factory.Checkpointer")
-    def test_run_not_on_selected_day(self, _, create_playlists, send_email):
-        self.__app.run()
-        create_playlists.assert_not_called()
-        send_email.assert_not_called()

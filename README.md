@@ -16,7 +16,6 @@ The following properties can be configured:
 | `ALWAYS_EMAIL`             | If an email should always be sent out even if there are no updates (defaults to false).                         |
 | `CREATE_SPOTIFY_PLAYLISTS` | If Spotify playlists should be created (defaults to true).                                                      |
 | `DAD_JOKE`                 | Include a dad joke in the email (defaults to true).                                                             |
-| `DAY_OF_WEEK_TO_RUN`       | Day of week that the application should be run (defaults to monday).                                            |
 | `MONGODB_URI`              | URI to MongoDB.                                                                                                 |
 | `PITCHFORK_ALBUMS`         | Include Pitchfork albums in digest (defaults to true).                                                          |
 | `PITCHFORK_TRACKS`         | Include Pitchfork tracks in digest (defaults to true).                                                          |
