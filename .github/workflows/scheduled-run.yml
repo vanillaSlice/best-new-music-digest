@@ -1,4 +1,4 @@
-name: Run
+name: Scheduled Run
 on:
   schedule:
     - cron:  '*/15 * * * *'
@@ -29,4 +29,5 @@ jobs:
           SPOTIFY_USERNAME: ${{ secrets.SPOTIFY_USERNAME }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
-          ./heroku-run.py
+          echo ${SPOTIFY_CACHE} > .cache-${SPOTIFY_USERNAME}
+          python run.py

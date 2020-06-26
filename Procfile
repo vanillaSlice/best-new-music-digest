@@ -1,1 +1,0 @@
-worker: ./heroku-run.sh

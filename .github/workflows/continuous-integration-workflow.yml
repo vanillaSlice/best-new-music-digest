@@ -22,6 +22,9 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -r requirements-test.txt
-      - name: Tests
+      - name: Lint
         run: |
-          ./scripts/all-tests.sh
+          pylint best_new_music_digest/ tests/
+      - name: Unit Tests
+        run: |
+          pytest tests/ --cov=best_new_music_digest --cov-report=term-missing --cov-fail-under=100
