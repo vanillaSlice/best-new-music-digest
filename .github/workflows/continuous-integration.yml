@@ -28,3 +28,8 @@ jobs:
       - name: Unit Tests
         run: |
           pytest tests/ --cov=best_new_music_digest --cov-report=term-missing --cov-fail-under=95
+      - name: Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run:
+          coveralls
