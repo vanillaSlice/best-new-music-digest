@@ -1,9 +1,0 @@
-after_success: coveralls
-branches:
-  only: master
-install:
-  - pip install -r requirements.txt
-  - pip install -r requirements-test.txt
-language: python
-python: 3.8
-script: ./scripts/all-tests.sh
