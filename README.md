@@ -39,7 +39,7 @@ Create a `.env` file using the `.env-starter` as a guide.
 From your terminal/command prompt run:
 
 ```
-./run.py
+python -m best_new_music_digest
 ```
 
 ## License

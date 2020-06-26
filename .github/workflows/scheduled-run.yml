@@ -1,7 +1,7 @@
 name: Scheduled Run
 on:
   schedule:
-    - cron:  '0 19 * * 1'
+    - cron: '0 19 * * 1'
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -32,5 +32,5 @@ jobs:
           SPOTIFY_USERNAME: ${{ secrets.SPOTIFY_USERNAME }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
-          echo ${SPOTIFY_CACHE} > .cache-${SPOTIFY_USERNAME}
-          python run.py
+          echo "$SPOTIFY_CACHE" > .cache-"$SPOTIFY_USERNAME"
+          python -m best_new_music_digest
