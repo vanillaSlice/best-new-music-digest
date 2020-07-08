@@ -158,18 +158,18 @@ def __get_track_ids(digest_item, spotify):
             single_match=True,
         )
 
-        # Try to find track using the artist's name under latest releases
+        # Try to find track using the artist's name
         if not track_id:
-            track_id = __get_track_id(artist, title, f"artist:{artist} tag:new", spotify)
+            track_id = __get_track_id(artist, title, f"artist:{artist}", spotify)
 
-        # Try to find track using the track title under latest releases
+        # Try to find track using the track title
         if not track_id:
-            track_id = __get_track_id(artist, title, f"track:{title} tag:new", spotify)
+            track_id = __get_track_id(artist, title, f"track:{title}", spotify)
 
-        # Try splitting the artist into multiple artists and searching under latest releases
+        # Try splitting the artist into multiple artists
         if not track_id:
             for art in artist.split(" & "):
-                track_id = __get_track_id(art, title, f"artist:{art} tag:new", spotify)
+                track_id = __get_track_id(art, title, f"artist:{art}", spotify)
                 if track_id:
                     break
 
@@ -215,7 +215,7 @@ def __add_tracks_to_playlist(track_ids, spotify, user_id, playlist_type):
         return None
 
     date = datetime.utcnow().strftime("%d/%m/%Y")
-    playlist_name = f"Best New Music Digest ({playlist_type.capitalize()}) - {date}"
+    playlist_name = f"BNMD ({playlist_type.capitalize()}) - {date}"
     playlist_response = spotify.user_playlist_create(user_id, playlist_name, public=False)
     playlist_id = playlist_response["id"]
     playlist_url = playlist_response["external_urls"]["spotify"]

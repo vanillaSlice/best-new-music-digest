@@ -63,7 +63,7 @@ class TestPlaylist(helpers.TestBase):
 
         spotify.user_playlist_create.assert_called_with(
             self.__user_id,
-            "Best New Music Digest (Albums) - 01/01/2020",
+            "BNMD (Albums) - 01/01/2020",
             public=False,
         )
 
@@ -126,7 +126,7 @@ class TestPlaylist(helpers.TestBase):
 
         spotify.user_playlist_create.assert_called_with(
             self.__user_id,
-            "Best New Music Digest (Tracks) - 01/01/2020",
+            "BNMD (Tracks) - 01/01/2020",
             public=False,
         )
 
@@ -188,7 +188,7 @@ class TestPlaylist(helpers.TestBase):
             if q == "artist:slowthai track:Magic":
                 return self._load_json_test_data("spotify_track_slowthai_response.json")
 
-            if q == "artist:Freddie Gibbs tag:new":
+            if q == "artist:Freddie Gibbs":
                 return self._load_json_test_data("spotify_track_freddie_gibbs_response.json")
 
             return self._load_json_test_data("spotify_track_empty_response.json")

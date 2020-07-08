@@ -38,7 +38,7 @@ class AlbumScraper(Scraper):
             self._save_checkpoint(link)
 
             item = {
-                "artist": " / ".join([li.contents[0] for li in div.find("ul").find_all("li")]),
+                "artist": " & ".join([li.contents[0] for li in div.find("ul").find_all("li")]),
                 "title": div.find("h2").contents[0],
                 "link": link,
             }
@@ -75,7 +75,7 @@ class TrackScraper(Scraper):
         self._save_checkpoint(link)
 
         item = {
-            "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
+            "artist": " & ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
             "title": self.__normalise_title(details.find("h2").contents[0]),
             "link": link,
         }
@@ -89,7 +89,7 @@ class TrackScraper(Scraper):
                 break
 
             items.append({
-                "artist": " / ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
+                "artist": " & ".join([li.contents[0] for li in details.find("ul").find_all("li")]),
                 "title": self.__normalise_title(details.find("h2").contents[0]),
                 "link": link,
             })
