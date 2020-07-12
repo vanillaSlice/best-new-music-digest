@@ -63,7 +63,7 @@ class TestPlaylist(helpers.TestBase):
 
         spotify.user_playlist_create.assert_called_with(
             self.__user_id,
-            "BNMD (Albums) - 01/01/2020",
+            "bnmd (albs) - 01/01/2020",
             public=False,
         )
 
@@ -126,7 +126,7 @@ class TestPlaylist(helpers.TestBase):
 
         spotify.user_playlist_create.assert_called_with(
             self.__user_id,
-            "BNMD (Tracks) - 01/01/2020",
+            "bnmd (trks) - 01/01/2020",
             public=False,
         )
 

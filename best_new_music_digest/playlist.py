@@ -44,8 +44,8 @@ def create_playlists(digest):
             elif digest_item["type"] == "tracks":
                 track_ids.extend(__get_track_ids(digest_item, spotify))
 
-        albums_playlist_url = __add_tracks_to_playlist(album_track_ids, spotify, user_id, "albums")
-        tracks_playlist_url = __add_tracks_to_playlist(track_ids, spotify, user_id, "tracks")
+        albums_playlist_url = __add_tracks_to_playlist(album_track_ids, spotify, user_id, "albs")
+        tracks_playlist_url = __add_tracks_to_playlist(track_ids, spotify, user_id, "trks")
 
         return albums_playlist_url, tracks_playlist_url
     except Exception as exception:
@@ -215,7 +215,7 @@ def __add_tracks_to_playlist(track_ids, spotify, user_id, playlist_type):
         return None
 
     date = datetime.utcnow().strftime("%d/%m/%Y")
-    playlist_name = f"BNMD ({playlist_type.capitalize()}) - {date}"
+    playlist_name = f"bnmd ({playlist_type}) - {date}"
     playlist_response = spotify.user_playlist_create(user_id, playlist_name, public=False)
     playlist_id = playlist_response["id"]
     playlist_url = playlist_response["external_urls"]["spotify"]
