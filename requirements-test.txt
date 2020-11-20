@@ -1,4 +1,4 @@
-coveralls==2.1.2
+coveralls==2.2.0
 freezegun==1.0.0
 mongomock==3.21.0
 pylint==2.6.0
