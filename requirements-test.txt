@@ -3,5 +3,5 @@ freezegun==1.0.0
 mongomock==3.22.1
 pylint==2.6.0
 pytest==6.2.1
-pytest-cov==2.10.1
+pytest-cov==2.11.0
 requests-mock==1.8.0
